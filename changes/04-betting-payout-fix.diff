@@ -1,0 +1,13 @@
+# Fix inverted PvP betting payout (winner/loser swap in Tet)
+# stage: war3map_290.j -> war3map_290_final.j
+#
+--- a/war3map.j
++++ b/war3map.j
+@@ -21819,5 +21819,5 @@
+ if IsPlayerInForce(det,oB[iet]) then
++set UB[iet]=2
++elseif IsPlayerInForce(det,rB[iet]) then
+ set UB[iet]=1
+-elseif IsPlayerInForce(det,rB[iet]) then
+-set UB[iet]=2
+ endif

@@ -1,0 +1,86 @@
+# New hero "Kerrigan, Queen of Blades" (H0KB) + version bump to 2.9.0
+# stage: war3map_287.j -> war3map_290.j
+#
+--- a/war3map.j
++++ b/war3map.j
+@@ -3216,2 +3216,5 @@
+ call SaveStr(tC,BCq(DC,$48303037),0,"|cffe7544aBase Crit bonus|r: ,0,%%")
++call SaveStr(tC,BCq(DC,$48304b42),0,"|cffe7544aAssimilated damage|r: ,0,")
++call SaveStr(tC,BCq(DC,$48304b42),1,"|cffd6e049Psionic Storm chance|r: ,0,%%")
++call SaveStr(tC,BCq(DC,$48304b42),2,"|cff4daed4Psionic Storm damage (% of Agility)|r: ,0,%%")
+ call SaveStr(tC,BCq(DC,$48304742),0,"|cffe7544aDouble or Nothing chance|r: ,0,%%")
+@@ -5457,2 +5460,6 @@
+ call SaveStr(tC,BCq(Po,$48303030),4,"24")
++call SaveStr(tC,BCq(Po,$48304b42),1,"ReplaceableTextures\\CommandButtons\\BTNMaiev.blp")
++call SaveStr(tC,BCq(Po,$48304b42),2,"|cff00ffffPassive|r: Essence Harvest: The Queen of Blades consumes the essence of the fallen. Each enemy slain permanently grants |cffffcc00+2 attack damage|r (up to +6000).|n|n|cff00ffffPassive|r: Psionic Storm: When the Hero attacks an enemy it has a 20% chance to unleash a psionic storm, dealing |cffff00ffmagic damage|r to nearby enemies equal to a percentage of its |cffff8000Agility|r. [|cff80ff80Luck|r]")
++call SaveStr(tC,BCq(Po,$48304b42),3,"|cffffff00Level Up Bonus|r: Psionic Storm: +4% Agility damage.")
++call SaveStr(tC,BCq(Po,$48304b42),4,"24")
+ call SaveStr(tC,BCq(Po,$48304742),1,"ReplaceableTextures\\CommandButtons\\BTNHeroFireLord.blp")
+@@ -11093,2 +11100,5 @@
+ call SaveReal(tC,BCq(pC,GetHandleId(Smt)),0,(15.+.05*I2R(kmt))*1.)
++elseif emt==$48304b42 then
++call SaveReal(tC,BCq(pC,GetHandleId(Smt)),1,20.*1.)
++call SaveReal(tC,BCq(pC,GetHandleId(Smt)),2,(80.+4.*I2R(kmt))*1.)
+ elseif emt==$48303136 then
+@@ -12534,2 +12544,7 @@
+ call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,15.05*1.)
++endif
++if GetUnitTypeId(ydt)==$48304b42 and jdt then
++call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,0.)
++call SaveReal(tC,BCq(pC,GetHandleId(ydt)),1,20.*1.)
++call SaveReal(tC,BCq(pC,GetHandleId(ydt)),2,84.*1.)
+ endif
+@@ -37574,2 +37589,8 @@
+ endif
++if GetUnitTypeId(ACt)==$48304b42 then
++if LoadReal(tC,BCq(pC,GetHandleId(ACt)),0)<6000. then
++call BlzSetUnitBaseDamage(ACt,BlzGetUnitBaseDamage(ACt,0)+2,0)
++call SaveReal(tC,BCq(pC,GetHandleId(ACt)),0,(LoadReal(tC,BCq(pC,GetHandleId(ACt)),0)+2.)*1.)
++endif
++endif
+ if GetUnitTypeId(ACt)==$48304742 then
+@@ -39007,2 +39028,10 @@
+ call Psq(hX,CX,pQt,tQt)
++endif
++endif
++if HX==$48304b42 and HZ[pZ] and(not IsUnitIllusion(hX)) and GetRandomInt(1,$64)<=(20.+Dwq(hX))*uX then
++if boq(GetHandleId(hX),$48304b42,.4) then
++call mEq(hX,GetUnitX(CX),GetUnitY(CX),I2R(GetHeroAgi(hX,true))*(.8+.04*I2R(GetHeroLevel(hX))),250.,true,$48304b42,true,false)
++if po then
++call DestroyEffect(AddSpecialEffect("war3mapImported\\Arcane Explosion.mdx",GetUnitX(CX),GetUnitY(CX)))
++endif
+ endif
+@@ -41857,2 +41886,3 @@
+ set KC[53]=$48304742
++set KC[54]=$48304b42
+ set Doq=1
+@@ -41980,2 +42010,14 @@
+ set NH[YH]=$48303036
++set YH=YH+1
++endif
++set Zoq=LoadInteger(wH,$48304b42,0)
++set oH[Zoq]=BlzBitOr(uoq,oH[Zoq])
++if uoq==4 then
++set VH[SH]=$48304b42
++set SH=SH+1
++elseif uoq==8 then
++set kH[QH]=$48304b42
++set QH=QH+1
++elseif uoq==16 then
++set NH[YH]=$48304b42
+ set YH=YH+1
+@@ -48650,3 +48692,3 @@
+ set yaq=N8()
+-set jm[yaq]="CHS v2.8.7"
++set jm[yaq]="CHS v2.9.0"
+ set ym[yaq]=Daq
+@@ -49801,2 +49843,4 @@
+ call NIq($48304742,1,1)
++call NIq($48304b42,7,1)
++call NIq($48304b42,13,1)
+ call NIq($48303035,7,1)
+@@ -50467,3 +50511,3 @@
+ function config takes nothing returns nothing
+-call SetMapName("CHS_v2.8.7")
++call SetMapName("CHS_v2.9.0")
+ call SetMapDescription("Build your own hero and test it against creeps and other players. Choose from over 200 abilities!\r\n\r\n7 May, 2026\r\n\r\nVisit the Discord at customherosurvival.com")

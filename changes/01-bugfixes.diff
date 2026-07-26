@@ -1,0 +1,19 @@
+# Three gameplay bug fixes (I07M zero-damage, spell-reflect x0, betting init loop)
+# stage: x_war3map.j -> war3map_fixed.j
+#
+--- a/war3map.j
++++ b/war3map.j
+@@ -3146,2 +3146,3 @@
+ set bq[d4q]=DialogCreate()
++set d4q=d4q+1
+ endloop
+@@ -26890,3 +26891,3 @@
+ endif
+-if utq(hX,$4930374d) or GetUnitAbilityLevel(hX,$4173736b)>0 and hX==CX then
++if (utq(hX,$4930374d) or GetUnitAbilityLevel(hX,$4173736b)>0) and hX==CX then
+ set qZ[pZ]=0.
+@@ -37948,3 +37949,3 @@
+ if Yw[LoadInteger(tC,cO,GetHandleId(hX))]>0. then
+-set qZ[pZ]=qZ[pZ]*LoadReal(tC,sr,nX)
++set qZ[pZ]=qZ[pZ]*Yw[LoadInteger(tC,cO,GetHandleId(hX))]
+ endif

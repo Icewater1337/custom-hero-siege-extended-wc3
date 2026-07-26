@@ -1,0 +1,41 @@
+# The base map, its decompiled source, and built binaries are NOT distributed
+# here. They are the property of the original author. Supply your own copy of
+# the base map to apply these patches. See README.md.
+
+# Base / built maps
+*.w3x
+*.w3m
+
+# Extracted base object data & scripts (produced locally by tools/extract.py)
+*.w3u
+*.w3t
+*.w3a
+*.w3h
+*.w3b
+*.w3d
+*.w3i
+*.wts
+*.j
+*.w3e
+*.wpm
+*.shd
+*.imp
+*.doo
+*.blp
+war3mapSkin.txt
+
+# Local working artifacts
+x_*
+new_*
+new290_*
+war3map_*.j
+*.patched
+*.patched.w3u
+jchunks/
+strings.json
+obj_*.json
+ability_tooltips.json
+prescan_report.txt
+_t.w3u
+__pycache__/
+*.pyc
