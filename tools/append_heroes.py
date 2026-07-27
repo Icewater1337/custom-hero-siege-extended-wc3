@@ -6,7 +6,7 @@ Reads the base game-unit table (war3map.w3u) and the base display/skin table
 
 Heroes:
   H0GB  "The Gambler"            base Nfir (Firelord),  Agility, ranged
-  H0KB  "Kerrigan, Queen of Blades" base Ewar (Warden),  Agility, melee
+  H0KB  "Kerrigan, Queen of Blades" base Ewar, Demoness model, Agility, melee
 
 Run from a directory containing war3map.w3u and war3mapSkin.w3u (see tools/README.md).
 """
@@ -43,9 +43,9 @@ KERRIGAN_GAMEPLAY = [
 KERRIGAN_SKIN = [
     ('unam', 'Kerrigan, Queen of Blades'),
     ('upro', 'Sarah Kerrigan'),
-    ('uico', 'ReplaceableTextures' + BS + 'CommandButtons' + BS + 'BTNMaiev.blp'),
-    ('umdl', 'units' + BS + 'NightElf' + BS + 'Warden' + BS + 'Warden.mdl'),
-    ('usnd', 'Warden'), ('upru', 1), ('ussi', ''),
+    ('uico', 'ReplaceableTextures' + BS + 'CommandButtons' + BS + 'BTNDemoness.blp'),
+    ('umdl', 'units' + BS + 'demon' + BS + 'Demoness' + BS + 'Demoness.mdl'),
+    ('usnd', 'EvilSylvanas'), ('upru', 1), ('ussi', ''),
 ]
 
 
