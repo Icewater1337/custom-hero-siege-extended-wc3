@@ -26,11 +26,12 @@ then hands the whole bill to the next thing it swings at.
 hit points** (**+0.01% per level**, up to 4%), ignoring armor and block. A target can only be
 hit by it once per **1 second**.
 
-**Grudge** — Banks **every point** of damage it takes, up to **15% of its maximum hit
-points**. Its next attack detonates the whole bank as **magic damage** to all enemies within
-**400** range of the target, and clears it.
+**Grudge** — Banks **every point** of damage it takes. Bank capacity is **15% of maximum hit
+points, +0.2% per level, uncapped** — 55% at level 200, 135% at level 600. Its next attack
+detonates the whole bank as **magic damage** to all enemies within **400** range of the target,
+and clears it.
 
-**Level Up Bonus** — Mountain's Weight: +0.01% of maximum hit points (maximum 4%).
+**Level Up Bonus** — Mountain's Weight: +0.01% of maximum hit points (maximum 4%). Grudge: +0.2% bank capacity.
 
 ## Why it was reworked
 
@@ -47,11 +48,11 @@ was magic. Both were wrong for this chassis:
 Everything now measures in **maximum hit points** — the stat a tank actually stacks — and the
 on-attack half is **pure**, so armor and Block do not touch it.
 
-| max HP | Mountain's Weight per attack (L200) | Grudge bank cap |
+| max HP | Mountain's Weight per attack (L200) | Grudge bank capacity (L200, 55%) |
 |---|---|---|
-| 200,000 | 6,000 | 30,000 |
-| 500,000 | 15,000 | 75,000 |
-| 1,000,000 | 30,000 | 150,000 |
+| 200,000 | 6,000 | 110,000 |
+| 500,000 | 15,000 | 275,000 |
+| 1,000,000 | 30,000 | 550,000 |
 
 ## Implementation notes
 
@@ -65,8 +66,10 @@ on-attack half is **pure**, so armor and Block do not touch it.
   0.35s). Without it, a percentage-of-HP effect deletes bosses.
 - The AoE dump stays magic because `mEq` has no pure option — but its size now comes from a
   max-HP-scaled bank rather than an attack-damage-scaled one, so it survives the ×0.20 tax.
-- The bank is capped by `RMinBJ(… , I2R(BlzGetUnitMaxHP(CX))*.15)`; `BlzGetUnitMaxHP` returns
-  an integer, hence the `I2R`.
+- Bank capacity is `I2R(BlzGetUnitMaxHP(CX))*(.15+.002*I2R(GetHeroLevel(CX)))` — still an
+  `RMinBJ` ceiling on the stored total, but the percentage itself has no upper clamp, so the
+  bank keeps pace with level instead of saturating. `BlzGetUnitMaxHP` returns an integer,
+  hence the `I2R`.
 - Thick Hide is a flat 15% with no level term. The previous +0.01%/level gained two percentage
   points across 200 levels — literally imperceptible, and not worth a stat-panel row pretending
   otherwise.

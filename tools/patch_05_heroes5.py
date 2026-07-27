@@ -20,7 +20,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 SRC = sys.argv[1] if len(sys.argv) > 1 else 'war3map_294.j'
 OUT = sys.argv[2] if len(sys.argv) > 2 else 'war3map_2A0.j'
-NEW_VERSION = '2.10.2'
+NEW_VERSION = '2.10.4'
 
 src = open(SRC, encoding='utf-8', newline='').read()
 assert '\r\n' not in src, 'input has CRLF line endings'
@@ -150,7 +150,7 @@ src = before(src, 'function PGt takes', HELPERS, 'helpers')
 #    own stat instead of fighting it.
 GR_TAKEN = ('if OX==' + GR + ' and qZ[pZ]>0. and(not IsUnitIllusion(CX)) then\n'
             'set qZ[pZ]=qZ[pZ]*.85*1.\n'
-            'call SaveReal(tC,BCq(pC,GetHandleId(CX)),0,RMinBJ(LoadReal(tC,BCq(pC,GetHandleId(CX)),0)+qZ[pZ],I2R(BlzGetUnitMaxHP(CX))*.15))\n'
+            'call SaveReal(tC,BCq(pC,GetHandleId(CX)),0,RMinBJ(LoadReal(tC,BCq(pC,GetHandleId(CX)),0)+qZ[pZ],I2R(BlzGetUnitMaxHP(CX))*(.15+.002*I2R(GetHeroLevel(CX)))))\n'
             'endif\n')
 src = before(src,
              'if GetUnitAbilityLevel(CX,$42303245)>0 then\nset qZ[pZ]=qZ[pZ]*.5\nendif\n',
@@ -190,9 +190,9 @@ PROC_SC = ('if HX==' + SC + ' and HZ[pZ] and(not IsUnitIllusion(hX)) and GetRand
 #   Growth is on the THRESHOLD (a bounded axis, 25%->35%) rather than on the
 #   multiplier, because the crit engine LAt() resolves at line ~26660, well before
 #   jQt, so anything here multiplies on top of an already-critted hit.
-PROC_EX = ('if HX==' + EX + ' and HZ[pZ] and(not IsUnitIllusion(hX)) and qZ[pZ]>0. and GetWidgetLife(CX)<=GetUnitState(CX,UNIT_STATE_MAX_LIFE)*RMinBJ(.25+.0002*I2R(GetHeroLevel(hX)),.35) then\n'
+PROC_EX = ('if HX==' + EX + ' and HZ[pZ] and(not IsUnitIllusion(hX)) and qZ[pZ]>0. and GetWidgetLife(CX)<=GetUnitState(CX,UNIT_STATE_MAX_LIFE)*(.20+.002*I2R(GetHeroLevel(hX))) then\n'
            'if boq(JX,' + EX + ',1.) then\n'
-           'set qZ[pZ]=qZ[pZ]*RMinBJ(1.6+.002*I2R(GetHeroLevel(hX)),2.5)*1.\n'
+           'set qZ[pZ]=qZ[pZ]*(2.+.005*I2R(GetHeroLevel(hX)))*1.\n'
            'if po then\n'
            'call DestroyEffect(AddSpecialEffect("Abilities' + DBS + 'Spells' + DBS + 'NightElf' + DBS + 'FanOfKnives' + DBS + 'FanOfKnivesTarget.mdl",GetUnitX(CX),GetUnitY(CX)))\n'
            'endif\n'
@@ -311,8 +311,8 @@ KDT = (
     'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),2,151.*1.)\n'
     'endif\n'
     'if GetUnitTypeId(ydt)==' + EX + ' and jdt then\n'
-    'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,60.2*1.)\n'
-    'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),1,25.02*1.)\n'
+    'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,100.5*1.)\n'
+    'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),1,20.2*1.)\n'
     'endif\n'
     'if GetUnitTypeId(ydt)==' + WC + ' and jdt then\n'
     'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,6.*1.)\n'
@@ -326,7 +326,7 @@ KDT = (
     'if GetUnitTypeId(ydt)==' + GR + ' and jdt then\n'
     'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,0.)\n'
     'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),1,1.01*1.)\n'
-    'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),2,15.*1.)\n'
+    'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),2,15.2*1.)\n'
     'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),3,15.*1.)\n'
     'endif\n')
 src = before(src, 'call puq(ydt,5,1.)\nset ydt=null\nendfunction', KDT, 'kdt')
@@ -340,8 +340,8 @@ HWT = (
     'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),1,25.*I2R(kmt)*1.)\n'
     'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),2,(150.+1.*I2R(kmt))*1.)\n'
     'elseif emt==' + EX + ' then\n'
-    'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),0,RMinBJ(60.+.2*I2R(kmt),150.)*1.)\n'
-    'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),1,RMinBJ(25.+.02*I2R(kmt),35.)*1.)\n'
+    'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),0,(100.+.5*I2R(kmt))*1.\n'
+    'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),1,(20.+.2*I2R(kmt))*1.\n'
     'elseif emt==' + WC + ' then\n'
     'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),0,6.*1.)\n'
     'elseif emt==' + SB + ' then\n'
@@ -414,8 +414,8 @@ for code_hex, icon, desc, lvl in [
      "|cff00ffffPassive|r: Forked Lightning: When the Hero attacks an enemy it has a 30% chance to call down a chain of lightning that strikes up to 5 enemies in a chain, each struck for |cffff00ffmagic damage|r equal to |cffffcc0025 per Hero level|r plus a percentage of its |cff8fd6ffIntelligence|r. [|cff80ff80Luck|r]",
      "|cffffff00Level Up Bonus|r: Forked Lightning: +25 damage, +1% Intelligence damage."),
     (EX, 'BTNHeroDeathKnight',
-     "|cff00ffffPassive|r: Headsman's Toll: The Hero's attacks against an enemy below |cffffcc0025%|r of its maximum hit points deal |cffffcc00+60%|r damage. Both the threshold and the bonus grow with level, to a maximum of |cffffcc0035%|r of maximum hit points and |cffffcc00+150%|r damage. A target cannot be executed again for 1 second.|n|n|cff00ffffPassive|r: Grim Harvest: Killing an enemy restores |cffffcc002%|r of the Hero's maximum hit points and mana.",
-     "|cffffff00Level Up Bonus|r: Headsman's Toll: +0.2% execute damage (max +150%), +0.02% execute threshold (max 35%)."),
+     "|cff00ffffPassive|r: Headsman's Toll: The Hero's attacks against an enemy below |cffffcc0020%|r of its maximum hit points deal |cffffcc00+100%|r damage. The threshold widens by |cffffcc000.2%|r and the bonus grows by |cffffcc000.5%|r per level, neither capped. A target cannot be executed again for 1 second.|n|n|cff00ffffPassive|r: Grim Harvest: Killing an enemy restores |cffffcc002%|r of the Hero's maximum hit points and mana.",
+     "|cffffff00Level Up Bonus|r: Headsman's Toll: +0.5% execute damage, +0.2% execute threshold."),
     (WC, 'BTNChaosWarlord',
      "|cff00ffffPassive|r: Warlord's Presence: All damage the Warchief deals is increased by |cffffcc006%|r for every allied Hero within 900 range, itself included (maximum 5).|n|n|cff00ffffPassive|r: Battle Standard: Every second the Warchief restores hit points to itself and every allied Hero within 900 range, based on its level and |cffff8000Strength|r.",
      "|cffffff00Level Up Bonus|r: Battle Standard: +30 hit points restored per second."),
@@ -423,8 +423,8 @@ for code_hex, icon, desc, lvl in [
      "|cff00ffffPassive|r: Arcane Edge: Every attack consumes |cffffcc002%|r of the Hero's maximum mana and unleashes |cffff00ffmagic damage|r equal to a multiple of the mana consumed. Without mana there is no bonus.|n|n|cff00ffffPassive|r: Mana Font: Killing an enemy restores |cffffcc002%|r of maximum mana.",
      "|cffffff00Level Up Bonus|r: Arcane Edge: +1% mana to damage conversion."),
     (GR, 'BTNBlueMagnataur',
-     "|cff00ffffPassive|r: Thick Hide: The Grudgebearer takes |cffffcc0015%|r less damage from all sources.|n|n|cff00ffffPassive|r: Mountain's Weight: Its attacks deal bonus |cff00ffffpure damage|r equal to a percentage of its |cffffcc00maximum hit points|r, ignoring armor and block. 1 second cooldown per target.|n|n|cff00ffffPassive|r: Grudge: Banks every point of damage it takes, up to |cffffcc0015%|r of its maximum hit points. Its next attack detonates the whole bank as |cffff00ffmagic damage|r to all enemies within 400 range of the target.",
-     "|cffffff00Level Up Bonus|r: Mountain's Weight: +0.01% of maximum hit points (maximum 4%)."),
+     "|cff00ffffPassive|r: Thick Hide: The Grudgebearer takes |cffffcc0015%|r less damage from all sources.|n|n|cff00ffffPassive|r: Mountain's Weight: Its attacks deal bonus |cff00ffffpure damage|r equal to a percentage of its |cffffcc00maximum hit points|r, ignoring armor and block. 1 second cooldown per target.|n|n|cff00ffffPassive|r: Grudge: Banks every point of damage it takes, up to |cffffcc0015%|r of its maximum hit points, |cffffcc00+0.2%|r per level. Its next attack detonates the whole bank as |cffff00ffmagic damage|r to all enemies within 400 range of the target.",
+     "|cffffff00Level Up Bonus|r: Mountain's Weight: +0.01% of maximum hit points (maximum 4%). Grudge: +0.2% bank capacity."),
 ]:
     PO += ('call SaveStr(tC,BCq(Po,' + code_hex + '),1,"' + ico(icon) + '")\n'
            'call SaveStr(tC,BCq(Po,' + code_hex + '),2,"' + desc + '")\n'

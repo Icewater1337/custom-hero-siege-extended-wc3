@@ -1,7 +1,7 @@
 # Five new heroes (H0SC Stormcaller, H0EX Executioner, H0WC Warchief,
 # H0SB Spellblade, H0GR Grudgebearer), Kerrigan (H0KB) rescaled onto the same
-# damage curve, hero-picker grid 56 -> 64 cells, the 2.10.1 healing-meter row
-# fix, and the version bump to 2.10.2
+# damage curve, hero-picker grid 56 -> 64 cells, the healing-meter row fix,
+# and the version bump to 2.10.4
 # stage: war3map_295.j -> war3map_2A0.j
 #
 --- a/war3map.j
@@ -34,8 +34,8 @@
 +call SaveStr(tC,BCq(Po,$48305343),3,"|cffffff00Level Up Bonus|r: Forked Lightning: +25 damage, +1% Intelligence damage.")
 +call SaveStr(tC,BCq(Po,$48305343),4,"24")
 +call SaveStr(tC,BCq(Po,$48304558),1,"ReplaceableTextures\\CommandButtons\\BTNHeroDeathKnight.blp")
-+call SaveStr(tC,BCq(Po,$48304558),2,"|cff00ffffPassive|r: Headsman's Toll: The Hero's attacks against an enemy below |cffffcc0025%|r of its maximum hit points deal |cffffcc00+60%|r damage. Both the threshold and the bonus grow with level, to a maximum of |cffffcc0035%|r of maximum hit points and |cffffcc00+150%|r damage. A target cannot be executed again for 1 second.|n|n|cff00ffffPassive|r: Grim Harvest: Killing an enemy restores |cffffcc002%|r of the Hero's maximum hit points and mana.")
-+call SaveStr(tC,BCq(Po,$48304558),3,"|cffffff00Level Up Bonus|r: Headsman's Toll: +0.2% execute damage (max +150%), +0.02% execute threshold (max 35%).")
++call SaveStr(tC,BCq(Po,$48304558),2,"|cff00ffffPassive|r: Headsman's Toll: The Hero's attacks against an enemy below |cffffcc0020%|r of its maximum hit points deal |cffffcc00+100%|r damage. The threshold widens by |cffffcc000.2%|r and the bonus grows by |cffffcc000.5%|r per level, neither capped. A target cannot be executed again for 1 second.|n|n|cff00ffffPassive|r: Grim Harvest: Killing an enemy restores |cffffcc002%|r of the Hero's maximum hit points and mana.")
++call SaveStr(tC,BCq(Po,$48304558),3,"|cffffff00Level Up Bonus|r: Headsman's Toll: +0.5% execute damage, +0.2% execute threshold.")
 +call SaveStr(tC,BCq(Po,$48304558),4,"24")
 +call SaveStr(tC,BCq(Po,$48305743),1,"ReplaceableTextures\\CommandButtons\\BTNChaosWarlord.blp")
 +call SaveStr(tC,BCq(Po,$48305743),2,"|cff00ffffPassive|r: Warlord's Presence: All damage the Warchief deals is increased by |cffffcc006%|r for every allied Hero within 900 range, itself included (maximum 5).|n|n|cff00ffffPassive|r: Battle Standard: Every second the Warchief restores hit points to itself and every allied Hero within 900 range, based on its level and |cffff8000Strength|r.")
@@ -46,8 +46,8 @@
 +call SaveStr(tC,BCq(Po,$48305342),3,"|cffffff00Level Up Bonus|r: Arcane Edge: +1% mana to damage conversion.")
 +call SaveStr(tC,BCq(Po,$48305342),4,"24")
 +call SaveStr(tC,BCq(Po,$48304752),1,"ReplaceableTextures\\CommandButtons\\BTNBlueMagnataur.blp")
-+call SaveStr(tC,BCq(Po,$48304752),2,"|cff00ffffPassive|r: Thick Hide: The Grudgebearer takes |cffffcc0015%|r less damage from all sources.|n|n|cff00ffffPassive|r: Mountain's Weight: Its attacks deal bonus |cff00ffffpure damage|r equal to a percentage of its |cffffcc00maximum hit points|r, ignoring armor and block. 1 second cooldown per target.|n|n|cff00ffffPassive|r: Grudge: Banks every point of damage it takes, up to |cffffcc0015%|r of its maximum hit points. Its next attack detonates the whole bank as |cffff00ffmagic damage|r to all enemies within 400 range of the target.")
-+call SaveStr(tC,BCq(Po,$48304752),3,"|cffffff00Level Up Bonus|r: Mountain's Weight: +0.01% of maximum hit points (maximum 4%).")
++call SaveStr(tC,BCq(Po,$48304752),2,"|cff00ffffPassive|r: Thick Hide: The Grudgebearer takes |cffffcc0015%|r less damage from all sources.|n|n|cff00ffffPassive|r: Mountain's Weight: Its attacks deal bonus |cff00ffffpure damage|r equal to a percentage of its |cffffcc00maximum hit points|r, ignoring armor and block. 1 second cooldown per target.|n|n|cff00ffffPassive|r: Grudge: Banks every point of damage it takes, up to |cffffcc0015%|r of its maximum hit points, |cffffcc00+0.2%|r per level. Its next attack detonates the whole bank as |cffff00ffmagic damage|r to all enemies within 400 range of the target.")
++call SaveStr(tC,BCq(Po,$48304752),3,"|cffffff00Level Up Bonus|r: Mountain's Weight: +0.01% of maximum hit points (maximum 4%). Grudge: +0.2% bank capacity.")
 +call SaveStr(tC,BCq(Po,$48304752),4,"24")
  call SaveStr(tC,BCq(Po,$48304b42),1,"ReplaceableTextures\\CommandButtons\\BTNDemoness.blp")
 -call SaveStr(tC,BCq(Po,$48304b42),2,"|cff00ffffPassive|r: Essence Harvest: The Queen of Blades consumes the essence of the fallen. Each enemy slain permanently grants |cffffcc00+2 attack damage|r (up to +6000).|n|n|cff00ffffPassive|r: Psionic Storm: When the Hero attacks an enemy it has a 20% chance to unleash a psionic storm, dealing |cffff00ffmagic damage|r to nearby enemies equal to a percentage of its |cffff8000Agility|r. [|cff80ff80Luck|r]")
@@ -82,8 +82,8 @@
 +call SaveReal(tC,BCq(pC,GetHandleId(Smt)),1,25.*I2R(kmt)*1.)
 +call SaveReal(tC,BCq(pC,GetHandleId(Smt)),2,(150.+1.*I2R(kmt))*1.)
 +elseif emt==$48304558 then
-+call SaveReal(tC,BCq(pC,GetHandleId(Smt)),0,RMinBJ(60.+.2*I2R(kmt),150.)*1.)
-+call SaveReal(tC,BCq(pC,GetHandleId(Smt)),1,RMinBJ(25.+.02*I2R(kmt),35.)*1.)
++call SaveReal(tC,BCq(pC,GetHandleId(Smt)),0,(100.+.5*I2R(kmt))*1.
++call SaveReal(tC,BCq(pC,GetHandleId(Smt)),1,(20.+.2*I2R(kmt))*1.
 +elseif emt==$48305743 then
 +call SaveReal(tC,BCq(pC,GetHandleId(Smt)),0,6.*1.)
 +elseif emt==$48305342 then
@@ -104,8 +104,8 @@
 +call SaveReal(tC,BCq(pC,GetHandleId(ydt)),2,151.*1.)
 +endif
 +if GetUnitTypeId(ydt)==$48304558 and jdt then
-+call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,60.2*1.)
-+call SaveReal(tC,BCq(pC,GetHandleId(ydt)),1,25.02*1.)
++call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,100.5*1.)
++call SaveReal(tC,BCq(pC,GetHandleId(ydt)),1,20.2*1.)
 +endif
 +if GetUnitTypeId(ydt)==$48305743 and jdt then
 +call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,6.*1.)
@@ -119,7 +119,7 @@
 +if GetUnitTypeId(ydt)==$48304752 and jdt then
 +call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,0.)
 +call SaveReal(tC,BCq(pC,GetHandleId(ydt)),1,1.01*1.)
-+call SaveReal(tC,BCq(pC,GetHandleId(ydt)),2,15.*1.)
++call SaveReal(tC,BCq(pC,GetHandleId(ydt)),2,15.2*1.)
 +call SaveReal(tC,BCq(pC,GetHandleId(ydt)),3,15.*1.)
  endif
 @@ -16072,3 +16151,3 @@
@@ -187,7 +187,7 @@
  endif
 +if OX==$48304752 and qZ[pZ]>0. and(not IsUnitIllusion(CX)) then
 +set qZ[pZ]=qZ[pZ]*.85*1.
-+call SaveReal(tC,BCq(pC,GetHandleId(CX)),0,RMinBJ(LoadReal(tC,BCq(pC,GetHandleId(CX)),0)+qZ[pZ],I2R(BlzGetUnitMaxHP(CX))*.15))
++call SaveReal(tC,BCq(pC,GetHandleId(CX)),0,RMinBJ(LoadReal(tC,BCq(pC,GetHandleId(CX)),0)+qZ[pZ],I2R(BlzGetUnitMaxHP(CX))*(.15+.002*I2R(GetHeroLevel(CX)))))
 +endif
  if GetUnitAbilityLevel(CX,$42303245)>0 then
 @@ -39428,5 +39558,42 @@
@@ -204,9 +204,9 @@
 +call Qsq(hX,CX,GetUnitX(hX),GetUnitY(hX),$41303252,"chainlightning",25.*I2R(GetHeroLevel(hX))+I2R(GetHeroInt(hX,true))*(1.5+.01*I2R(GetHeroLevel(hX))),ABILITY_RLF_DAMAGE_PER_TARGET_OCL1)
 +endif
 +endif
-+if HX==$48304558 and HZ[pZ] and(not IsUnitIllusion(hX)) and qZ[pZ]>0. and GetWidgetLife(CX)<=GetUnitState(CX,UNIT_STATE_MAX_LIFE)*RMinBJ(.25+.0002*I2R(GetHeroLevel(hX)),.35) then
++if HX==$48304558 and HZ[pZ] and(not IsUnitIllusion(hX)) and qZ[pZ]>0. and GetWidgetLife(CX)<=GetUnitState(CX,UNIT_STATE_MAX_LIFE)*(.20+.002*I2R(GetHeroLevel(hX))) then
 +if boq(JX,$48304558,1.) then
-+set qZ[pZ]=qZ[pZ]*RMinBJ(1.6+.002*I2R(GetHeroLevel(hX)),2.5)*1.
++set qZ[pZ]=qZ[pZ]*(2.+.005*I2R(GetHeroLevel(hX)))*1.
 +if po then
 +call DestroyEffect(AddSpecialEffect("Abilities\\Spells\\NightElf\\FanOfKnives\\FanOfKnivesTarget.mdl",GetUnitX(CX),GetUnitY(CX)))
 +endif
@@ -333,7 +333,7 @@
 @@ -49089,3 +49321,3 @@
  set yaq=N8()
 -set jm[yaq]="CHS v2.9.5"
-+set jm[yaq]="CHS v2.10.2"
++set jm[yaq]="CHS v2.10.4"
  set ym[yaq]=Daq
 @@ -50242,2 +50474,10 @@
  call NIq($48304b42,13,1)
@@ -349,5 +349,5 @@
 @@ -50908,3 +51148,3 @@
  function config takes nothing returns nothing
 -call SetMapName("CHS_v2.9.5")
-+call SetMapName("CHS_v2.10.2")
++call SetMapName("CHS_v2.10.4")
  call SetMapDescription("Build your own hero and test it against creeps and other players. Choose from over 200 abilities!\r\n\r\n7 May, 2026\r\n\r\nVisit the Discord at customherosurvival.com")

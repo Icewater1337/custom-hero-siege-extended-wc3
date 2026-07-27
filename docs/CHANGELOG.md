@@ -1,5 +1,24 @@
 # Changelog
 
+## 2.10.4
+
+- **Stormcaller** — Strength and Agility growth both raised **+50%** (3.0 → **4.5** per level
+  each; Intelligence growth unchanged at 5.5). At level 200 that is STR/AGI ~920 instead of
+  ~620. Object-data change, so it needed a `war3map.w3u` rebuild rather than a script patch.
+  This does not touch its damage, which scales off Intelligence — it is purely survivability,
+  armor and attack speed on what was the squishiest of the five.
+
+## 2.10.3
+
+- **Grudgebearer** — Grudge bank capacity is no longer a flat 15% of maximum hit points: it is
+  **15% + 0.2% per level, uncapped** (55% at level 200, 135% at level 600).
+- **Executioner** — retuned upward and **both terms uncapped**: damage bonus **+100%
+  (+0.5%/level)**, execute window **20% of max HP (+0.2%/level)**. At level 200 that is a 60%
+  window for ×3.00; the window reaches 100% (always on) at level 400. The 1-second per-target
+  cooldown is retained.
+- Carries the parallel branch's **Ice Force (A053) tooltip fix**, re-applied after the version
+  bump regenerates `war3map.wts`.
+
 ## 2.10.2
 
 - **The Grudgebearer reworked.** Everything now scales off **maximum hit points** instead of

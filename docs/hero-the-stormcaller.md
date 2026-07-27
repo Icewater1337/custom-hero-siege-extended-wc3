@@ -6,7 +6,7 @@
 | Base unit | `Hjai` (Jaina — ranged hero chassis) |
 | Primary attribute | Intelligence (ranged) |
 | Start stats | STR 24 / AGI 26 / INT 42 |
-| Growth | +3.0 / +3.0 / +5.5 |
+| Growth | +4.5 / +4.5 / +5.5 |
 | Attack | 14 + 1d12, cooldown 1.55 |
 | Move speed | 300 |
 | Model / icon | `units\orc\Shaman\Shaman.mdl` / `BTNShaman` |

@@ -21,22 +21,20 @@ the roster's first genuine boss-finisher and a real threat in a duel.
 
 ## Passives
 
-**Headsman's Toll** — The Hero's **attacks** against an enemy at or below **25%** of its
-maximum hit points deal **+60% damage**. A target cannot be executed again for **1 second**.
+**Headsman's Toll** — The Hero's **attacks** against an enemy at or below **20%** of its
+maximum hit points deal **+100% damage**. A target cannot be executed again for **1 second**.
 
-Both halves grow with level and **both are hard-capped**:
+Both halves grow with level and **neither is capped**:
 
-| | at level 1 | per level | **cap** | cap reached at |
+| | at level 1 | per level | at level 200 | at level 400 |
 |---|---|---|---|---|
-| execute threshold | 25% of max HP | +0.02% | **35% of max HP** | level 500 |
-| damage bonus | +60% (×1.6) | +0.2% | **+150% (×2.5)** | level 450 |
-
-At level 200 that is a 29% window for ×2.00 damage.
+| execute window | 20% of max HP | +0.2% | 60% of max HP | 100% — always on |
+| damage bonus | +100% (×2.0) | +0.5% | +200% (×3.0) | +300% (×4.0) |
 
 **Grim Harvest** — Killing an enemy restores **2%** of the Hero's maximum hit points and
 **2%** of its maximum mana.
 
-**Level Up Bonus** — Headsman's Toll: +0.2% execute damage, +0.02% execute threshold.
+**Level Up Bonus** — Headsman's Toll: +0.5% execute damage, +0.2% execute threshold.
 
 ## Implementation notes
 
@@ -47,19 +45,12 @@ At level 200 that is a 29% window for ×2.00 damage.
 - It runs in `jQt`, which fires on `EVENT_UNIT_DAMAGED`, so `qZ[pZ]` is the real
   post-armor, post-block, post-magic-protection damage. The multiplier applies to what the
   target would actually have taken.
-- **The multiplier is deliberately below the map's own ceiling, and this hero was retuned
-  once for exactly that reason.** The largest damage multiplier anywhere in the base script
-  is ×3 (`$41304333`), and even that is gated behind a 2-second ability cooldown and a
-  timing window; the ×2 at ~27127 needs a 20% roll. The first version of Headsman's Toll
-  was ×2.5 rising to ×5.0 with **no roll and no cooldown** — above everything the map
-  ships. It now runs ×1.6 → a hard **×2.5**, with a **1-second per-target internal
-  cooldown** keyed on `boq(JX,…)`, matching Horsepower's convention.
-
-- **Growth was moved off the multiplier and onto the threshold.** The crit engine `LAt()`
-  resolves at line ~26660, well before `jQt`, so anything written here multiplies an
-  already-critted hit: at level 200 the old ×3.5 on top of a ×3 crit was ×10 of the final
-  post-armor damage. The threshold (25% → 35%) is a bounded axis — a wider execute window
-  can never compound with anything.
+- **Both terms are uncapped by explicit design decision.** The multiplier passes the map's own
+  ×3 ceiling at level 200 and the execute window reaches 100% of maximum hit points at level
+  400, from which point the bonus is unconditional. That is intended — but note the crit engine
+  `LAt()` resolves at line ~26660, well before `jQt`, so this multiplies an already-critted hit.
+  The **1-second per-target cooldown** (`boq(JX,…)`) is what keeps it bounded against a single
+  target, and it was deliberately retained.
 - The health test uses `GetWidgetLife(CX) <= GetUnitState(CX,UNIT_STATE_MAX_LIFE)*.2`
   (both reals — `BlzGetUnitMaxHP` returns an integer and would need a conversion).
 - Grim Harvest is 2% and not more because it has no cooldown and a wave is 25+ kills per

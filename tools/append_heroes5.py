@@ -30,7 +30,7 @@ HEROES = [
         code='H0SC', base='Hjai', name='The Stormcaller', proper='Zar Thundertongue',
         model='units' + BS + 'orc' + BS + 'Shaman' + BS + 'Shaman.mdl', icon='BTNShaman',
         pra='INT',
-        stats=dict(ustr=24, uagi=26, uint=42, ustp=3.0, uagp=3.0, uinp=5.5,
+        stats=dict(ustr=24, uagi=26, uint=42, ustp=4.5, uagp=4.5, uinp=5.5,
                    uhpm=150, uhpr=2.0, ua1b=14, ua1d=1, ua1s=12, ua1c=1.55,
                    umvs=300, upoi=320, ucpt=0.35),
     ),

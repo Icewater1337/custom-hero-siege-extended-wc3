@@ -1,4 +1,4 @@
-"""Build CHS_v2.10.2.w3x - 2.9.4 plus the five new heroes.
+"""Build CHS_v2.10.4.w3x - 2.9.4 plus the five new heroes.
 
 Replaces exactly five files inside the MPQ and verifies that every other file
 re-extracts byte-identical to the original archive.
@@ -11,7 +11,7 @@ from mpyq import MPQArchive
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 SRC = 'map.w3x'
-OUT = 'CHS_v2.10.2.w3x'
+OUT = 'CHS_v2.10.4.w3x'
 REPLACEMENTS = {
     'war3map.j':        'war3map_2A0.j',
     'war3map.wts':      'new2A0_war3map.wts',
@@ -135,7 +135,7 @@ for pat in ['exitwhen Wnq>64', 'exitwhen EOq>64', 'exitwhen toq>64', 'exitwhen k
     assert pat in js, 'grid bound not raised: ' + pat
 assert js.count('exitwhen Doq>64') == 2 and '>56' not in js, 'a 56-bound survived'
 assert 'Loq*2.+.032*8+.008*7+.015+.02+.0145' in js, 'grid height not raised to 8 rows'
-assert 'SetMapName("CHS_v2.10.2")' in js and 'set jm[yaq]="CHS v2.10.2"' in js
+assert 'SetMapName("CHS_v2.10.4")' in js and 'set jm[yaq]="CHS v2.10.4"' in js
 assert 'set UB[iet]=2\nelseif IsPlayerInForce(det,rB[iet]) then\nset UB[iet]=1' in js, 'betting fix lost'
 assert 'function WcAllies takes' in js and 'function WcBanner takes' in js
 # everything inherited from the 2.9.1-2.9.5 chain must still be here
@@ -145,8 +145,10 @@ assert js.count('call HealObserve(') == 7, 'healing-meter hooks changed'
 assert 'elseif b==' + "$48305342" + ' then' in js and 'Arcane Edge' in js, 'meter attribution lost'
 wts = b.read_file('war3map.wts').decode('utf-8-sig')
 skin = b.read_file('war3mapSkin.txt').decode('utf-8')
-assert 'CHS_v2.9.5' not in wts and wts.count('CHS_v2.10.2') == 2
+assert 'CHS_v2.9.5' not in wts and wts.count('CHS_v2.10.4') == 2
 assert '2.9.29' in wts, 'the unrelated 2.9.29 tooltip was clobbered'
-assert '|Cff00ff002.10.2' in skin and '2.9.5' not in skin
-print('VERIFY: 5 heroes registered, grid at 64 cells, version 2.10.2,')
+assert '|Cff00ff002.10.4' in skin and '2.9.5' not in skin
+assert b"blocking |cffffcc00Int / (Int + 500)|r" in b.read_file('war3map.wts'), 'Ice Force tooltip fix lost'
+assert b.read_file('war3map.wts').count(b',s01,') == 1, 'Ice Force ,s01, tokens not cleaned (A089 must keep exactly one)'
+print('VERIFY: 5 heroes registered, grid at 64 cells, version 2.10.4,')
 print('        damage meter + healing meter + all prior fixes intact')
