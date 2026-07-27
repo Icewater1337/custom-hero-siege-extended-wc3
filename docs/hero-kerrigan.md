@@ -24,7 +24,22 @@ damage" items use — with the running total stored in `pC[0]` and shown on the 
 
 **Psionic Storm** *(proc)* — When the Hero **attacks** an enemy, a **20%** chance (improved by
 Luck) to unleash a psionic storm dealing **magic damage** in a 250 radius around the target,
-equal to a percentage of the Hero's **Agility** (**80% + 4% per level**). `[Luck]`
+equal to **25 × Hero level** plus a percentage of the Hero's **Agility**
+(**150% + 1% per level** — 350% at level 200). `[Luck]`
+
+> **Rescaled in 2.10.0.** Psionic Storm originally scaled as `80% + 4% per level` of Agility
+> with no flat term. 4%/level was 4–8× the roster's convention for attribute scaling and the
+> steepest coefficient in the map — unbounded, it reached 2480% of Agility at the level-600
+> cap. It now uses the same shape as the Stormcaller: a flat per-level term that gives the
+> passive a real floor at low level, plus a 1%/level attribute share, which is the roster's
+> target rate. Below roughly level 90 this is a straight buff; above it, a correction.
+
+| level | old (% of AGI) | new |
+|---|---|---|
+| 1 | 84% | 25 + 151% |
+| 50 | 280% | 1,250 + 200% |
+| 200 | 880% | 5,000 + 350% |
+| 600 | 2,480% | 15,000 + 750% |
 
 ## Implementation notes
 
@@ -36,7 +51,8 @@ equal to a percentage of the Hero's **Agility** (**80% + 4% per level**). `[Luck
   spellFlag=true, attributionRawcode, magic=true, isAttack=false)`, which is safe to call from
   inside the damage engine.
 - Agility is read as `I2R(GetHeroAgi(hX, true))` (total, with bonuses).
-- Stat panel shows Psionic Storm chance and the Agility-scaling percentage.
+- Stat panel shows Psionic Storm chance, the Agility-scaling percentage, and (new in 2.10.0)
+  the flat per-level component as a fourth row — `DC` allows exactly 0..3.
 
 ## Model / assets
 

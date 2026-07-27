@@ -1,4 +1,4 @@
-"""Build CHS_v2.10.0.w3x - 2.9.4 plus the five new heroes.
+"""Build CHS_v2.10.2.w3x - 2.9.4 plus the five new heroes.
 
 Replaces exactly five files inside the MPQ and verifies that every other file
 re-extracts byte-identical to the original archive.
@@ -11,7 +11,7 @@ from mpyq import MPQArchive
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 SRC = 'map.w3x'
-OUT = 'CHS_v2.10.0.w3x'
+OUT = 'CHS_v2.10.2.w3x'
 REPLACEMENTS = {
     'war3map.j':        'war3map_2A0.j',
     'war3map.wts':      'new2A0_war3map.wts',
@@ -19,7 +19,7 @@ REPLACEMENTS = {
     'war3mapSkin.w3u':  'new2A0_war3mapSkin.w3u',
     'war3mapSkin.txt':  'new2A0_war3mapSkin.txt',
 }
-NEW_HEROES = {'H0SC': 17, 'H0EX': 16, 'H0WC': 18, 'H0SB': 18, 'H0GR': 20}
+NEW_HEROES = {'H0SC': 18, 'H0EX': 17, 'H0WC': 18, 'H0SB': 18, 'H0GR': 22}
 
 a = MPQArchive(SRC, listfile=False)
 h = a.header
@@ -121,7 +121,11 @@ os.remove('_t.w3u')
 print('VERIFY: all 7 custom heroes present in both object-data tables')
 
 js = b.read_file('war3map.j').decode('utf-8')
-assert js.count('$48304742') == 16 and js.count('$48304b42') == 20, 'existing heroes disturbed'
+assert js.count('$48304742') == 16, 'the Gambler was disturbed'
+# Kerrigan gains one reference: a 4th stat-panel row for the flat half of Psionic Storm
+assert js.count('$48304b42') == 21, 'Kerrigan reference count off'
+assert '25.*I2R(GetHeroLevel(hX))+I2R(GetHeroAgi(hX,true))*(1.5+.01*I2R(GetHeroLevel(hX)))' in js, 'Kerrigan not rescaled'
+assert '(.8+.04*I2R(GetHeroLevel(hX)))' not in js, 'Kerrigan old 4%/level coefficient survived'
 for c, n in NEW_HEROES.items():
     lit = '$' + c.encode('latin1').hex()
     assert js.count(lit) == n, '%s: %d refs, expected %d' % (c, js.count(lit), n)
@@ -131,7 +135,7 @@ for pat in ['exitwhen Wnq>64', 'exitwhen EOq>64', 'exitwhen toq>64', 'exitwhen k
     assert pat in js, 'grid bound not raised: ' + pat
 assert js.count('exitwhen Doq>64') == 2 and '>56' not in js, 'a 56-bound survived'
 assert 'Loq*2.+.032*8+.008*7+.015+.02+.0145' in js, 'grid height not raised to 8 rows'
-assert 'SetMapName("CHS_v2.10.0")' in js and 'set jm[yaq]="CHS v2.10.0"' in js
+assert 'SetMapName("CHS_v2.10.2")' in js and 'set jm[yaq]="CHS v2.10.2"' in js
 assert 'set UB[iet]=2\nelseif IsPlayerInForce(det,rB[iet]) then\nset UB[iet]=1' in js, 'betting fix lost'
 assert 'function WcAllies takes' in js and 'function WcBanner takes' in js
 # everything inherited from the 2.9.1-2.9.5 chain must still be here
@@ -141,8 +145,8 @@ assert js.count('call HealObserve(') == 7, 'healing-meter hooks changed'
 assert 'elseif b==' + "$48305342" + ' then' in js and 'Arcane Edge' in js, 'meter attribution lost'
 wts = b.read_file('war3map.wts').decode('utf-8-sig')
 skin = b.read_file('war3mapSkin.txt').decode('utf-8')
-assert 'CHS_v2.9.5' not in wts and wts.count('CHS_v2.10.0') == 2
+assert 'CHS_v2.9.5' not in wts and wts.count('CHS_v2.10.2') == 2
 assert '2.9.29' in wts, 'the unrelated 2.9.29 tooltip was clobbered'
-assert '|Cff00ff002.10.0' in skin and '2.9.5' not in skin
-print('VERIFY: 5 heroes registered, grid at 64 cells, version 2.10.0,')
+assert '|Cff00ff002.10.2' in skin and '2.9.5' not in skin
+print('VERIFY: 5 heroes registered, grid at 64 cells, version 2.10.2,')
 print('        damage meter + healing meter + all prior fixes intact')

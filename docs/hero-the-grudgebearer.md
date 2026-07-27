@@ -20,35 +20,55 @@ then hands the whole bill to the next thing it swings at.
 
 ## Passives
 
-**Thick Hide** — The Grudgebearer takes **10%** less damage from all sources
-(**+0.01% per level**, up to 20%).
+**Thick Hide** — The Grudgebearer takes **15%** less damage from all sources.
 
-**Grudge** — Stores **40%** of all damage it takes (**+0.05% per level**, up to 60%), to a
-maximum of **5×** its attack damage. Its next **attack** releases the entire stored Grudge
-as **magic damage** to all enemies within **400** range of the target, and clears it.
+**Mountain's Weight** — Its attacks deal bonus **pure damage** equal to **1% of its maximum
+hit points** (**+0.01% per level**, up to 4%), ignoring armor and block. A target can only be
+hit by it once per **1 second**.
 
-**Level Up Bonus** — Grudge: +0.05% of damage stored. Thick Hide: +0.01% damage reduction.
+**Grudge** — Banks **every point** of damage it takes, up to **15% of its maximum hit
+points**. Its next attack detonates the whole bank as **magic damage** to all enemies within
+**400** range of the target, and clears it.
+
+**Level Up Bonus** — Mountain's Weight: +0.01% of maximum hit points (maximum 4%).
+
+## Why it was reworked
+
+The first version scaled off **attack damage** — the bank was capped at 5× it, and the payload
+was magic. Both were wrong for this chassis:
+
+- This hero is built to be the worst attacker of the five (24 + 1d10, 1.60s cooldown, lowest
+  Agility). Capping its payload against its weakest stat meant the cap was tiny, the bank
+  overflowed within a couple of creep hits, and everything above it was silently discarded.
+  Tanking *harder* bought you nothing.
+- The dump was magic damage, which round-50 creeps cut by **80%** (200 magic protection). A cap
+  of 5× a low attack damage, then quartered, is invisible.
+
+Everything now measures in **maximum hit points** — the stat a tank actually stacks — and the
+on-attack half is **pure**, so armor and Block do not touch it.
+
+| max HP | Mountain's Weight per attack (L200) | Grudge bank cap |
+|---|---|---|
+| 200,000 | 6,000 | 30,000 |
+| 500,000 | 15,000 | 75,000 |
+| 1,000,000 | 30,000 | 150,000 |
 
 ## Implementation notes
 
-- Both halves of the defensive side live in one block in `jQt`'s mitigation section, keyed
-  on `OX` (the *target's* type id) rather than `HX`. Thick Hide applies first, so Grudge
-  banks the damage that is actually taken, not the pre-mitigation figure — tanking harder
-  does not secretly inflate the payload.
-- Because `jQt` runs on `EVENT_UNIT_DAMAGED`, `qZ[pZ]` there is the true final damage after
-  armor, Block and magic protection. That makes the stored number honest and keeps the
-  effect meaningful against every damage type, not just auto-attacks.
-- The store is capped at `UIq(CX,0)*5.` — five times the hero's own full attack damage. The
-  cap is tied to the player's build rather than to a flat constant, so it scales with the
-  hero instead of going stale, and a single enormous hit can never be converted into a
-  wave-deleting nuke.
-- Both per-level terms are clamped with `RMinBJ` (60% stored, 20% reduction). Nothing here
-  keeps growing at the level-600 cap.
-- The release is dealt through the map's deferred AoE helper
-  `mEq(hX, x, y, stored, 400., true, H0GR, true, false)` — the `true` in position six sets
-  `j=3`, so the burst is proc damage and cannot re-enter the proc block. The store is zeroed
-  in the same block, so it cannot be double-spent.
-- `mEq`'s attribution id makes the burst its own damage-meter row; the patch adds a
-  **"Grudge"** entry to `DmgName`.
-- The live stored value is written to `pC[0]`, which the stat panel renders — so the panel
-  doubles as a charge meter you can watch fill up.
+- **"Pure damage" is `set qZ[pZ]=(qZ[pZ]+x)*1.` inside `jQt`.** `jQt` runs on
+  `EVENT_UNIT_DAMAGED`, i.e. *after* armor, Block and magic protection have all been applied,
+  so anything added there is untaxed. This is exactly how H01H's Cannibal Frenzy — the card
+  that advertises "ignores armor and block" — is implemented (line 39259). It is also why the
+  old design underperformed: `mEq` can only deal `DAMAGE_TYPE_MAGIC` or `NORMAL`, both taxed.
+- Mountain's Weight carries a **1-second per-target cooldown** (`boq(JX,…)`), the same guard
+  the roster puts on every percentage-based on-attack effect (Horsepower 2s, Cannibal Frenzy
+  0.35s). Without it, a percentage-of-HP effect deletes bosses.
+- The AoE dump stays magic because `mEq` has no pure option — but its size now comes from a
+  max-HP-scaled bank rather than an attack-damage-scaled one, so it survives the ×0.20 tax.
+- The bank is capped by `RMinBJ(… , I2R(BlzGetUnitMaxHP(CX))*.15)`; `BlzGetUnitMaxHP` returns
+  an integer, hence the `I2R`.
+- Thick Hide is a flat 15% with no level term. The previous +0.01%/level gained two percentage
+  points across 200 levels — literally imperceptible, and not worth a stat-panel row pretending
+  otherwise.
+- The live bank is written to `pC[0]`, which the stat panel renders — the panel doubles as a
+  charge meter you can watch fill.

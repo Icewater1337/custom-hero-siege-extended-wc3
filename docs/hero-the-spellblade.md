@@ -44,6 +44,12 @@ Without mana there is no bonus.
   recursion cutout is never approached.
 - `df` also makes the damage meter list it as its own row; the patch adds an
   **"Arcane Edge"** entry to `DmgName` so it does not display as the hero's name.
+- The burst is capped at **6× the Hero's own attack damage** (`RMinBJ(…, UIq(hX,0)*6.)`).
+  Maximum mana is the one input here that items can inflate without a natural ceiling, and
+  this passive has no proc roll, so the cap exists purely to stop a pathological mana stack
+  from becoming a one-shot. It does not bind for ordinary builds, and it scales with the
+  player's own build rather than being a flat constant — the same approach the
+  Grudgebearer's store uses.
 - Mana is read and written with `GetUnitState`/`SetUnitState` on
   `UNIT_STATE_MANA` / `UNIT_STATE_MAX_MANA`; the cost is checked *before* it is paid, so a
   hero below the threshold simply attacks normally.

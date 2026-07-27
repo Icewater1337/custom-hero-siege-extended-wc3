@@ -20,12 +20,13 @@ targets, so it reaches enemies that are spread out and cannot be dodged by spaci
 
 ## Passives
 
-**Forked Lightning** *(proc)* — When the Hero **attacks** an enemy, a **20%** chance
-(improved by Luck) to call down a chain of lightning that strikes up to **5** enemies in a chain
-(the target plus four arcs). Each enemy struck takes **magic damage** equal to a percentage of the Hero's
-**Intelligence** (**80% + 0.9% per level**). `[Luck]`
+**Forked Lightning** *(proc)* — When the Hero **attacks** an enemy, a **30%** chance
+(improved by Luck) to call down a chain of lightning that strikes up to **5** enemies
+(the target plus four arcs). Each enemy struck takes **magic damage** equal to
+**25 × Hero level**, plus a percentage of the Hero's **Intelligence**
+(**150% + 1% per level** — 350% at level 200). `[Luck]`
 
-**Level Up Bonus** — Forked Lightning: +0.9% Intelligence damage.
+**Level Up Bonus** — Forked Lightning: +25 damage, +1% Intelligence damage.
 
 ## Implementation notes
 
@@ -39,12 +40,17 @@ targets, so it reaches enemies that are spread out and cannot be dodged by spaci
 - Gated on `HZ[pZ]` (auto-attacks only), which also makes it recursion-safe: the chain's
   damage is not an auto-attack, so it can never re-trigger the proc. A
   `boq(GetHandleId(hX), H0SC, 0.4s)` internal cooldown is a second backstop, matching the
-  convention for a 20% on-attack proc.
+  convention for a high-frequency on-attack proc.
 - Intelligence is read as `GetHeroInt(hX,true)` (total, including bonuses).
 - Because the chain is dealt by the ability rather than by an attributed `mEq` call, the
   damage meter lists it under the ability's own name.
-- 0.9%/level sits in the roster's 0.5–1.0%/level band for attribute scaling. It is
-  deliberately at the lower end rather than the 1.5%/level hard limit, because unlike a
-  single-target coefficient this one is paid on **all five** targets with no falloff — the
-  effective coefficient across the chain is 4.5%/level, already comparable to Kerrigan's
-  4%/level, which is the roster's flagged outlier.
+- **The damage is flat-per-level plus an attribute share**, which is the roster's dominant
+  shape for area damage — H005 Disease Cloud is 40·L, O001 Thunder Bolt 30·L, H016 Hellfire
+  25·L, N00K Bladestorm 35·L. At 25·L per target the flat half sits at the low end of that
+  band, which is right for something that hits five targets per proc.
+- Mixing the two matters most at the extremes. A pure `% of Intelligence` passive does almost
+  nothing at low level, when Intelligence is still double digits, and then scales without a
+  floor; the flat term gives the hero a usable early game, and the attribute term is what
+  rewards actually building Intelligence later. The 1%/level attribute part is exactly the roster's
+  target rate for attribute scaling (0.5–1.0%/level, never above 1.5), so the curve stays
+  in convention even though it is paid on all five targets.

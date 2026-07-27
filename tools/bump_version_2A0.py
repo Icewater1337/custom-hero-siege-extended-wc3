@@ -15,7 +15,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 PREFIX = sys.argv[1] if len(sys.argv) > 1 else 'new295'
 OLD = sys.argv[2] if len(sys.argv) > 2 else '2.9.5'
-NEW = '2.10.0'
+NEW = '2.10.2'
 
 # newline='' on the READ matters: without it Python's universal-newline mode
 # silently rewrites all 165,295 CRLF line endings in war3map.wts to LF (the

@@ -33,6 +33,7 @@ needs attention.
 | `build_2A0.py` | Build `CHS_v2.10.0.w3x` + integrity and registration assertions. |
 | `heroes5_check.py` | Static JASS checks against a known-good baseline (see below). |
 | `heroes5_models.py` | Inventory every model/icon the map references and mark the ones already used by a roster hero. |
+| `patch_06_iceforce_tooltip.py` | Fix the Ice Force (A053) tooltip that showed the raw `,s01,` placeholder. Operates on `war3map.wts` (after the version bump); leaves Martial Retribution's `,s01,` token intact. |
 
 ## Checking a patched script before you build it
 

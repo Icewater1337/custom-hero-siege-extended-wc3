@@ -1,15 +1,34 @@
 # Changelog
 
+## 2.10.2
+
+- **The Grudgebearer reworked.** Everything now scales off **maximum hit points** instead of
+  attack damage, and the on-attack half deals **pure damage** (`qZ[pZ]+x` inside `jQt`, after
+  armor/Block/magic protection — the same idiom as H01H's "ignores armor and block").
+  *Thick Hide* flat 15%; *Mountain's Weight* 1% of max HP +0.01%/level (max 4%), 1s per target;
+  *Grudge* banks all damage taken up to 15% of max HP, detonated on the next attack.
+  The old version capped its payload at 5× attack damage — the stat this chassis is
+  deliberately worst at — then dealt it as magic, which round-50 creeps cut by 80%.
+- **Stormcaller** Forked Lightning proc chance 20% → **30%**.
+- Merged the parallel 2.10.1 build's healing-meter fix (`DmgMbCreate` styled only rows 0–15
+  while the board is 20 rows, so the "Healed by:" rows had no column widths).
+- **Ice Force tooltip fix.** The extended tooltip embedded the map's runtime placeholder
+  `,s01,` (only swapped for the live value once the ability is active), so the ability preview
+  showed the raw `(,s01,%)` token. Rewritten to a self-contained description of the real
+  mechanic — blocks `INT/(INT+500)` of one incoming hit. `,s01,` is also used by Martial
+  Retribution's own live tooltip, which is left untouched. See `docs/fix-iceforce-tooltip.md`.
+
 ## 2.10.0
 
 **Five new heroes** — chosen to fill five axes the 54-hero roster genuinely did not cover.
 
 - ⚡ **The Stormcaller** (`H0SC`) — Intelligence, ranged. *Forked Lightning*: 20% on-attack
   chance to call a real Chain Lightning that strikes up to 5 **distinct** enemies for
-  80% + 0.9%/level of Intelligence each. Every other area passive in the map hits a uniform
+  25 × Hero level + (150% + 1%/level, i.e. 350% at level 200) of Intelligence each. Every other area passive in the map hits a uniform
   radius; nothing chained. See `docs/hero-the-stormcaller.md`.
 - ☠️ **The Executioner** (`H0EX`) — Strength, melee. *Headsman's Toll*: attacks against an
-  enemy at or below 20% of maximum health deal +150% damage (+0.5%/level, capped at +400%).
+  enemy at or below 25% of maximum health (+0.02%/level, max 35%) deal +60% damage
+  (+0.2%/level, capped at +150%), with a 1-second per-target cooldown.
   *Grim Harvest*: kills restore 2% of max HP and mana. The roster's two HP-scaling heroes
   both scale off the **full** part of the health bar; this is the first low-health payoff.
 - 🚩 **The Warchief** (`H0WC`) — Strength, melee. *Warlord's Presence*: +6% damage per allied
@@ -21,9 +40,17 @@
   2% of maximum mana and deals magic damage worth 200% + 1%/level of the mana spent.
   *Mana Font*: kills restore 2% of maximum mana. Three heroes touch mana; none spent it.
 - 🛡️ **The Grudgebearer** (`H0GR`) — Strength, melee. *Thick Hide*: 10% less damage taken
-  (+0.01%/level, max 20%). *Grudge*: banks 40% of damage taken (+0.05%/level, max 60%) up to
+  (+0.03%/level, max 20%). *Grudge*: banks 40% of damage taken (+0.05%/level, max 60%) up to
   5× its attack damage, then dumps the whole store as magic damage in a 400 radius on its
   next attack. Two heroes react to being hit; none stored it.
+
+**Existing hero rescaled**
+
+- 🗡️ **Kerrigan** (`H0KB`) — *Psionic Storm* moved onto the same curve as the new heroes:
+  **25 × Hero level + (150% + 1%/level) of Agility**, replacing `80% + 4%/level` with no flat
+  term. 4%/level was 4–8× the roster's convention and the steepest coefficient in the map;
+  unbounded it reached 2480% of Agility at the level cap. Below ~level 90 this is a buff, above
+  it a correction. A fourth stat-panel row shows the flat component.
 
 **Hero picker capacity**
 
@@ -33,6 +60,20 @@
   `BlzFrameSetSize` height term changed from `.032*7+.008*6` to `.032*8+.008*7`. Slots
   60–64 stay empty and take the same blank-cell path 55/56 already took.
   *Without this change heroes 57–59 would simply never appear.*
+
+**Balance ceiling**
+
+- No new passive exceeds the multipliers the base map already ships. The largest damage
+  multiplier anywhere in the base script is **×3** (`$41304333`) and it is gated behind a
+  2-second cooldown plus a timing window; the ×2 needs a 20% roll. The Executioner's execute
+  was retuned from ×2.5→×5.0 *with no roll and no cooldown* down to ×1.6→×2.5 **with a
+  1-second per-target cooldown**, and its per-level growth was moved onto the execute
+  *threshold* (a bounded axis) instead. This matters because the crit engine `LAt()` resolves
+  well before `jQt`, so anything written there multiplies an already-critted hit — at level
+  200 the original was ×3.5 on top of a ×3 crit.
+- Every unbounded input is capped against the player's own build rather than a flat constant:
+  the Spellblade's burst at 6× its attack damage (max mana is the one stat items can inflate
+  without a ceiling), the Grudgebearer's store at 5×.
 
 **Notes**
 

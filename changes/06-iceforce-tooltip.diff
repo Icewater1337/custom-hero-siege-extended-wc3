@@ -1,0 +1,98 @@
+# Ice Force (A053) tooltip fix, v2.10.2. The extended tooltip embedded the map's runtime
+# placeholder ',s01,' (only swapped once the ability is live), so the preview showed the raw
+# '(,s01,%)' token. Rewritten to a self-contained description. Applies to all 30 level
+# strings; ',s01,' is left intact where A089 (Martial Retribution) uses it. See
+# docs/fix-iceforce-tooltip.md and tools/patch_06_iceforce_tooltip.py.
+#
+--- a/war3map.wts
++++ b/war3map.wts
+@@ -3097 +3097 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool1,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool1,.> seconds
+@@ -15380 +15380 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool2,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool2,.> seconds
+@@ -15896 +15896 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool3,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool3,.> seconds
+@@ -16172 +16172 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool4,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool4,.> seconds
+@@ -16316 +16316 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool5,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool5,.> seconds
+@@ -16322 +16322 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool6,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool6,.> seconds
+@@ -16424 +16424 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool7,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool7,.> seconds
+@@ -16430 +16430 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool8,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool8,.> seconds
+@@ -16436 +16436 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool9,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool9,.> seconds
+@@ -16826 +16826 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool10,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool10,.> seconds
+@@ -16832 +16832 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool11,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool11,.> seconds
+@@ -16886 +16886 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool12,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool12,.> seconds
+@@ -16958 +16958 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool13,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool13,.> seconds
+@@ -17612 +17612 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool14,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool14,.> seconds
+@@ -18806 +18806 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool15,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool15,.> seconds
+@@ -19564 +19564 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool16,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool16,.> seconds
+@@ -19582 +19582 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool17,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool17,.> seconds
+@@ -19588 +19588 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool18,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool18,.> seconds
+@@ -19594 +19594 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool19,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool19,.> seconds
+@@ -19600 +19600 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool20,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool20,.> seconds
+@@ -19606 +19606 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool21,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool21,.> seconds
+@@ -19612 +19612 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool22,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool22,.> seconds
+@@ -19618 +19618 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool23,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool23,.> seconds
+@@ -19624 +19624 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool24,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool24,.> seconds
+@@ -19630 +19630 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool25,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool25,.> seconds
+@@ -20290 +20290 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool26,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool26,.> seconds
+@@ -20296 +20296 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool27,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool27,.> seconds
+@@ -20302 +20302 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool28,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool28,.> seconds
+@@ -20308 +20308 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool29,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool29,.> seconds
+@@ -20314 +20314 @@
+-Reduces damage taken by Hero based on its intelligence (,s01,%) once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool30,.> seconds
++Reduces the damage of one incoming hit based on the Hero's Intelligence, blocking |cffffcc00Int / (Int + 500)|r of it (50% at 500 Int), once every few seconds. |n|n|cffd49696Cooldown|r: <A053,Cool30,.> seconds

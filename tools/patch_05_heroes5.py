@@ -20,7 +20,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 SRC = sys.argv[1] if len(sys.argv) > 1 else 'war3map_294.j'
 OUT = sys.argv[2] if len(sys.argv) > 2 else 'war3map_2A0.j'
-NEW_VERSION = '2.10.0'
+NEW_VERSION = '2.10.2'
 
 src = open(SRC, encoding='utf-8', newline='').read()
 assert '\r\n' not in src, 'input has CRLF line endings'
@@ -141,12 +141,16 @@ src = before(src, 'function PGt takes', HELPERS, 'helpers')
 #    jQt runs on EVENT_UNIT_DAMAGED, so qZ[pZ] here is the real post-armor,
 #    post-block, post-magic-protection damage about to land.
 # ============================================================================
-#    RMaxBJ on the cap: BlzGetUnitBaseDamage can be driven negative by debuffs,
-#    which would make UIq()*5. negative, store a negative Grudge and stall the
-#    passive permanently (the release tests >=1.).
+#    Everything the Grudgebearer does is measured in MAXIMUM HIT POINTS, not in
+#    attack damage. The first version capped the bank at 5x attack damage, which
+#    is the one stat this chassis is deliberately worst at (24+1d10, 1.60s
+#    cooldown, lowest of the five) - so the cap was tiny, the bank overflowed
+#    instantly, and everything above it was thrown away. Max HP is what a tank
+#    actually builds, so tying both halves to it makes the hero scale with its
+#    own stat instead of fighting it.
 GR_TAKEN = ('if OX==' + GR + ' and qZ[pZ]>0. and(not IsUnitIllusion(CX)) then\n'
-            'set qZ[pZ]=qZ[pZ]*(1.-RMinBJ(.10+.0001*I2R(GetHeroLevel(CX)),.20))*1.\n'
-            'call SaveReal(tC,BCq(pC,GetHandleId(CX)),0,RMinBJ(LoadReal(tC,BCq(pC,GetHandleId(CX)),0)+qZ[pZ]*RMinBJ(.40+.0005*I2R(GetHeroLevel(CX)),.60),RMaxBJ(UIq(CX,0)*5.,0.)))\n'
+            'set qZ[pZ]=qZ[pZ]*.85*1.\n'
+            'call SaveReal(tC,BCq(pC,GetHandleId(CX)),0,RMinBJ(LoadReal(tC,BCq(pC,GetHandleId(CX)),0)+qZ[pZ],I2R(BlzGetUnitMaxHP(CX))*.15))\n'
             'endif\n')
 src = before(src,
              'if GetUnitAbilityLevel(CX,$42303245)>0 then\nset qZ[pZ]=qZ[pZ]*.5\nendif\n',
@@ -170,17 +174,28 @@ KERRIGAN_PROC = (
 
 # Stormcaller - real Chain Lightning (A02R, 5 targets) fired through the map's
 # own dummy-cast helper, damage per target scaled off Intelligence.
-PROC_SC = ('if HX==' + SC + ' and HZ[pZ] and(not IsUnitIllusion(hX)) and GetRandomInt(1,$64)<=(20.+Dwq(hX))*uX then\n'
+PROC_SC = ('if HX==' + SC + ' and HZ[pZ] and(not IsUnitIllusion(hX)) and GetRandomInt(1,$64)<=(30.+Dwq(hX))*uX then\n'
            'if boq(GetHandleId(hX),' + SC + ',.4) then\n'
-           'call Qsq(hX,CX,GetUnitX(hX),GetUnitY(hX),$41303252,"chainlightning",I2R(GetHeroInt(hX,true))*(.8+.009*I2R(GetHeroLevel(hX))),ABILITY_RLF_DAMAGE_PER_TARGET_OCL1)\n'
+           'call Qsq(hX,CX,GetUnitX(hX),GetUnitY(hX),$41303252,"chainlightning",25.*I2R(GetHeroLevel(hX))+I2R(GetHeroInt(hX,true))*(1.5+.01*I2R(GetHeroLevel(hX))),ABILITY_RLF_DAMAGE_PER_TARGET_OCL1)\n'
            'endif\n'
            'endif\n')
 
 # Executioner - pure amplification of this same hit, no new damage instance.
-PROC_EX = ('if HX==' + EX + ' and HZ[pZ] and(not IsUnitIllusion(hX)) and qZ[pZ]>0. and GetWidgetLife(CX)<=GetUnitState(CX,UNIT_STATE_MAX_LIFE)*.2 then\n'
-           'set qZ[pZ]=qZ[pZ]*RMinBJ(2.5+.005*I2R(GetHeroLevel(hX)),5.)*1.\n'
+#   The multiplier is deliberately below the map's own ceiling. The largest damage
+#   multiplier anywhere in the base script is x3 ($41304333, line ~26899) and even
+#   that one is gated behind a 2s ability cooldown and a timing window; the x2 at
+#   ~27127 needs a 20% roll. This one is unconditional inside its window, so it sits
+#   at x1.6 rising to a hard x2.5 - and it gets a 1s per-target internal cooldown,
+#   matching Horsepower's boq(JX,...) convention for a big on-attack payoff.
+#   Growth is on the THRESHOLD (a bounded axis, 25%->35%) rather than on the
+#   multiplier, because the crit engine LAt() resolves at line ~26660, well before
+#   jQt, so anything here multiplies on top of an already-critted hit.
+PROC_EX = ('if HX==' + EX + ' and HZ[pZ] and(not IsUnitIllusion(hX)) and qZ[pZ]>0. and GetWidgetLife(CX)<=GetUnitState(CX,UNIT_STATE_MAX_LIFE)*RMinBJ(.25+.0002*I2R(GetHeroLevel(hX)),.35) then\n'
+           'if boq(JX,' + EX + ',1.) then\n'
+           'set qZ[pZ]=qZ[pZ]*RMinBJ(1.6+.002*I2R(GetHeroLevel(hX)),2.5)*1.\n'
            'if po then\n'
            'call DestroyEffect(AddSpecialEffect("Abilities' + DBS + 'Spells' + DBS + 'NightElf' + DBS + 'FanOfKnives' + DBS + 'FanOfKnivesTarget.mdl",GetUnitX(CX),GetUnitY(CX)))\n'
+           'endif\n'
            'endif\n'
            'endif\n')
 
@@ -195,22 +210,75 @@ PROC_SB = ('if HX==' + SB + ' and HZ[pZ] and(not IsUnitIllusion(hX)) and GetUnit
            'set j=3\n'
            'set df=' + SB + '\n'
            'call SetUnitState(hX,UNIT_STATE_MANA,GetUnitState(hX,UNIT_STATE_MANA)-GetUnitState(hX,UNIT_STATE_MAX_MANA)*.02)\n'
-           'call sLq(hX,CX,GetUnitState(hX,UNIT_STATE_MAX_MANA)*.02*(2.+.01*I2R(GetHeroLevel(hX))),false,false,null,DAMAGE_TYPE_MAGIC,null)\n'
+           'call sLq(hX,CX,RMinBJ(GetUnitState(hX,UNIT_STATE_MAX_MANA)*.02*(2.+.01*I2R(GetHeroLevel(hX))),UIq(hX,0)*6.),false,false,null,DAMAGE_TYPE_MAGIC,null)\n'
            'if po then\n'
            'call DestroyEffect(AddSpecialEffect("Abilities' + DBS + 'Weapons' + DBS + 'Bolt' + DBS + 'BoltImpact.mdl",GetUnitX(CX),GetUnitY(CX)))\n'
            'endif\n'
            'endif\n')
 
 # Grudgebearer - dumps everything stored in pC[0] as an AoE, then clears it.
-PROC_GR = ('if HX==' + GR + ' and HZ[pZ] and(not IsUnitIllusion(hX)) and LoadReal(tC,BCq(pC,GetHandleId(hX)),0)>=1. then\n'
+# Grudgebearer - Mountain's Weight (pure damage from max HP) then the Grudge dump.
+#   Adding to qZ[pZ] here IS the map's "pure damage": jQt runs on
+#   EVENT_UNIT_DAMAGED, i.e. after armor, after Block and after magic protection,
+#   so the added amount is untaxed. H01H's Cannibal Frenzy - the card that says
+#   "ignores armor and block" - is the identical idiom (39259).
+PROC_GR = ('if HX==' + GR + ' and HZ[pZ] and(not IsUnitIllusion(hX)) then\n'
+           'if boq(JX,' + GR + ',1.) then\n'
+           'set qZ[pZ]=(qZ[pZ]+I2R(BlzGetUnitMaxHP(hX))*RMinBJ(.01+.0001*I2R(GetHeroLevel(hX)),.04))*1.\n'
+           'endif\n'
+           'if LoadReal(tC,BCq(pC,GetHandleId(hX)),0)>=1. then\n'
            'call mEq(hX,GetUnitX(CX),GetUnitY(CX),LoadReal(tC,BCq(pC,GetHandleId(hX)),0),400.,true,' + GR + ',true,false)\n'
            'call SaveReal(tC,BCq(pC,GetHandleId(hX)),0,0.)\n'
            'if po then\n'
            'call DestroyEffect(AddSpecialEffect("Abilities' + DBS + 'Spells' + DBS + 'Orc' + DBS + 'WarStomp' + DBS + 'WarStompCaster.mdl",GetUnitX(CX),GetUnitY(CX)))\n'
            'endif\n'
+           'endif\n'
            'endif\n')
 
 src = after(src, KERRIGAN_PROC, PROC_SC + PROC_EX + PROC_WC + PROC_SB + PROC_GR, 'procs')
+
+# ============================================================================
+# 4b. RESCALE KERRIGAN (H0KB) onto the same curve as the Stormcaller:
+#     flat (25 x hero level) + a percentage of the attribute, 150% + 1%/level.
+#
+#     Psionic Storm shipped as AGI*(0.8+0.04*level). 4%/level is 4-8x the
+#     roster's convention for attribute scaling and the single steepest
+#     coefficient in the map - unbounded, it reaches 24.8x Agility at the
+#     level-600 cap. Moving it to 1%/level (the roster's target rate) plus a
+#     flat per-level term gives her a real floor at low level and a sane tail,
+#     and puts her on the same footing as the new heroes.
+#
+#     MUST run after the proc insertion above, which anchors on the original
+#     mEq line.
+# ============================================================================
+KB = '$48304b42'
+src = swap(src,
+           'I2R(GetHeroAgi(hX,true))*(.8+.04*I2R(GetHeroLevel(hX)))',
+           '25.*I2R(GetHeroLevel(hX))+I2R(GetHeroAgi(hX,true))*(1.5+.01*I2R(GetHeroLevel(hX)))',
+           'kb-damage')
+# 4th stat row for the flat half (DC allows 0..3, contiguous)
+src = after(src,
+            'call SaveStr(tC,BCq(DC,' + KB + '),2,"|cff4daed4Psionic Storm damage (% of Agility)|r: ,0,%%")\n',
+            'call SaveStr(tC,BCq(DC,' + KB + '),3,"|cff51d44dPsionic Storm damage|r: ,0,")\n',
+            'kb-dc')
+src = swap(src,
+           'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),2,84.*1.)\n',
+           'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),2,151.*1.)\n'
+           'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),3,25.*1.)\n',
+           'kb-kdt')
+src = swap(src,
+           'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),2,(80.+4.*I2R(kmt))*1.)\n',
+           'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),2,(150.+1.*I2R(kmt))*1.)\n'
+           'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),3,25.*I2R(kmt)*1.)\n',
+           'kb-hwt')
+src = swap(src,
+           'dealing |cffff00ffmagic damage|r to nearby enemies equal to a percentage of its |cffff8000Agility|r.',
+           'dealing |cffff00ffmagic damage|r to nearby enemies equal to |cffffcc0025 per Hero level|r plus a percentage of its |cffff8000Agility|r.',
+           'kb-po2')
+src = swap(src,
+           '|cffffff00Level Up Bonus|r: Psionic Storm: +4% Agility damage.',
+           '|cffffff00Level Up Bonus|r: Psionic Storm: +25 damage, +1% Agility damage.',
+           'kb-po3')
 
 # ============================================================================
 # 5. ON-KILL (eCt). ACt = the credited hero, lCt = the victim.
@@ -238,12 +306,13 @@ src = before(src,
 # ============================================================================
 KDT = (
     'if GetUnitTypeId(ydt)==' + SC + ' and jdt then\n'
-    'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,20.*1.)\n'
-    'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),1,80.9*1.)\n'
+    'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,30.*1.)\n'
+    'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),1,25.*1.)\n'
+    'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),2,151.*1.)\n'
     'endif\n'
     'if GetUnitTypeId(ydt)==' + EX + ' and jdt then\n'
-    'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,150.5*1.)\n'
-    'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),1,20.*1.)\n'
+    'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,60.2*1.)\n'
+    'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),1,25.02*1.)\n'
     'endif\n'
     'if GetUnitTypeId(ydt)==' + WC + ' and jdt then\n'
     'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,6.*1.)\n'
@@ -256,8 +325,9 @@ KDT = (
     'endif\n'
     'if GetUnitTypeId(ydt)==' + GR + ' and jdt then\n'
     'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,0.)\n'
-    'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),1,40.05*1.)\n'
-    'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),2,10.01*1.)\n'
+    'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),1,1.01*1.)\n'
+    'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),2,15.*1.)\n'
+    'call SaveReal(tC,BCq(pC,GetHandleId(ydt)),3,15.*1.)\n'
     'endif\n')
 src = before(src, 'call puq(ydt,5,1.)\nset ydt=null\nendfunction', KDT, 'kdt')
 
@@ -266,19 +336,19 @@ src = before(src, 'call puq(ydt,5,1.)\nset ydt=null\nendfunction', KDT, 'kdt')
 # ============================================================================
 HWT = (
     'elseif emt==' + SC + ' then\n'
-    'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),0,20.*1.)\n'
-    'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),1,(80.+.9*I2R(kmt))*1.)\n'
+    'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),0,30.*1.)\n'
+    'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),1,25.*I2R(kmt)*1.)\n'
+    'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),2,(150.+1.*I2R(kmt))*1.)\n'
     'elseif emt==' + EX + ' then\n'
-    'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),0,RMinBJ(150.+.5*I2R(kmt),400.)*1.)\n'
-    'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),1,20.*1.)\n'
+    'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),0,RMinBJ(60.+.2*I2R(kmt),150.)*1.)\n'
+    'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),1,RMinBJ(25.+.02*I2R(kmt),35.)*1.)\n'
     'elseif emt==' + WC + ' then\n'
     'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),0,6.*1.)\n'
     'elseif emt==' + SB + ' then\n'
     'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),0,2.*1.)\n'
     'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),1,(200.+I2R(kmt))*1.)\n'
     'elseif emt==' + GR + ' then\n'
-    'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),1,RMinBJ(40.+.05*I2R(kmt),60.)*1.)\n'
-    'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),2,RMinBJ(10.+.01*I2R(kmt),20.)*1.)\n')
+    'call SaveReal(tC,BCq(pC,GetHandleId(Smt)),1,RMinBJ(1.+.01*I2R(kmt),4.)*1.)\n')
 src = before(src,
              'elseif emt==$48303136 then\ncall SaveReal(tC,BCq(pC,GetHandleId(Smt)),0,kmt*25*1.)',
              HWT, 'hwt')
@@ -341,11 +411,11 @@ def ico(name):
 PO = ''
 for code_hex, icon, desc, lvl in [
     (SC, 'BTNShaman',
-     "|cff00ffffPassive|r: Forked Lightning: When the Hero attacks an enemy it has a 20% chance to call down a chain of lightning that strikes up to 5 enemies in a chain, each struck for |cffff00ffmagic damage|r equal to a percentage of its |cff8fd6ffIntelligence|r. [|cff80ff80Luck|r]",
-     "|cffffff00Level Up Bonus|r: Forked Lightning: +0.9% Intelligence damage."),
+     "|cff00ffffPassive|r: Forked Lightning: When the Hero attacks an enemy it has a 30% chance to call down a chain of lightning that strikes up to 5 enemies in a chain, each struck for |cffff00ffmagic damage|r equal to |cffffcc0025 per Hero level|r plus a percentage of its |cff8fd6ffIntelligence|r. [|cff80ff80Luck|r]",
+     "|cffffff00Level Up Bonus|r: Forked Lightning: +25 damage, +1% Intelligence damage."),
     (EX, 'BTNHeroDeathKnight',
-     "|cff00ffffPassive|r: Headsman's Toll: The Hero's attacks against an enemy below |cffffcc0020%|r of its maximum hit points deal massively increased damage.|n|n|cff00ffffPassive|r: Grim Harvest: Killing an enemy restores |cffffcc002%|r of the Hero's maximum hit points and mana.",
-     "|cffffff00Level Up Bonus|r: Headsman's Toll: +0.5% execute damage."),
+     "|cff00ffffPassive|r: Headsman's Toll: The Hero's attacks against an enemy below |cffffcc0025%|r of its maximum hit points deal |cffffcc00+60%|r damage. Both the threshold and the bonus grow with level, to a maximum of |cffffcc0035%|r of maximum hit points and |cffffcc00+150%|r damage. A target cannot be executed again for 1 second.|n|n|cff00ffffPassive|r: Grim Harvest: Killing an enemy restores |cffffcc002%|r of the Hero's maximum hit points and mana.",
+     "|cffffff00Level Up Bonus|r: Headsman's Toll: +0.2% execute damage (max +150%), +0.02% execute threshold (max 35%)."),
     (WC, 'BTNChaosWarlord',
      "|cff00ffffPassive|r: Warlord's Presence: All damage the Warchief deals is increased by |cffffcc006%|r for every allied Hero within 900 range, itself included (maximum 5).|n|n|cff00ffffPassive|r: Battle Standard: Every second the Warchief restores hit points to itself and every allied Hero within 900 range, based on its level and |cffff8000Strength|r.",
      "|cffffff00Level Up Bonus|r: Battle Standard: +30 hit points restored per second."),
@@ -353,8 +423,8 @@ for code_hex, icon, desc, lvl in [
      "|cff00ffffPassive|r: Arcane Edge: Every attack consumes |cffffcc002%|r of the Hero's maximum mana and unleashes |cffff00ffmagic damage|r equal to a multiple of the mana consumed. Without mana there is no bonus.|n|n|cff00ffffPassive|r: Mana Font: Killing an enemy restores |cffffcc002%|r of maximum mana.",
      "|cffffff00Level Up Bonus|r: Arcane Edge: +1% mana to damage conversion."),
     (GR, 'BTNBlueMagnataur',
-     "|cff00ffffPassive|r: Thick Hide: The Grudgebearer takes |cffffcc0010%|r less damage from all sources.|n|n|cff00ffffPassive|r: Grudge: Stores a percentage of all damage it takes, up to 5 times its attack damage. Its next attack releases the whole grudge as |cffff00ffmagic damage|r to all enemies within 400 range of the target.",
-     "|cffffff00Level Up Bonus|r: Grudge: +0.05% of damage stored. Thick Hide: +0.01% damage reduction."),
+     "|cff00ffffPassive|r: Thick Hide: The Grudgebearer takes |cffffcc0015%|r less damage from all sources.|n|n|cff00ffffPassive|r: Mountain's Weight: Its attacks deal bonus |cff00ffffpure damage|r equal to a percentage of its |cffffcc00maximum hit points|r, ignoring armor and block. 1 second cooldown per target.|n|n|cff00ffffPassive|r: Grudge: Banks every point of damage it takes, up to |cffffcc0015%|r of its maximum hit points. Its next attack detonates the whole bank as |cffff00ffmagic damage|r to all enemies within 400 range of the target.",
+     "|cffffff00Level Up Bonus|r: Mountain's Weight: +0.01% of maximum hit points (maximum 4%)."),
 ]:
     PO += ('call SaveStr(tC,BCq(Po,' + code_hex + '),1,"' + ico(icon) + '")\n'
            'call SaveStr(tC,BCq(Po,' + code_hex + '),2,"' + desc + '")\n'
@@ -365,11 +435,11 @@ src = before(src, 'call SaveStr(tC,BCq(Po,$48304b42),1,', PO, 'po')
 DC_COLORS = ['|cffe7544a', '|cffd6e049', '|cff4daed4', '|cff51d44d']
 DC = ''
 for code_hex, rows in [
-    (SC, [('Forked Lightning chance', '%%'), ('Lightning damage (% of Intelligence)', '%%')]),
+    (SC, [('Forked Lightning chance', '%%'), ('Lightning damage per target', ''), ('Lightning damage (% of Intelligence)', '%%')]),
     (EX, [('Execute damage bonus', '%%'), ('Execute threshold (% of max hit points)', '%%')]),
     (WC, [('Damage bonus per nearby ally', '%%'), ('Battle Standard healing per second', ''), ('Total hit points restored', '')]),
     (SB, [('Mana spent per attack', '%%'), ('Mana to damage conversion', '%%')]),
-    (GR, [('Stored Grudge', ''), ('Damage stored', '%%'), ('Damage reduction', '%%')]),
+    (GR, [('Stored Grudge', ''), ("Mountain's Weight (% of max hit points)", '%%'), ('Grudge cap (% of max hit points)', '%%'), ('Damage reduction', '%%')]),
 ]:
     for i, (label, suffix) in enumerate(rows):
         DC += ('call SaveStr(tC,BCq(DC,' + code_hex + '),' + str(i) + ',"'
@@ -389,6 +459,17 @@ if meter:
                 'return "|cff8fd6ffArcane Edge|r"\n'
                 'elseif b==' + GR + ' then\n'
                 'return "|cff8fd6ffGrudge|r"\n', 'dmgname')
+
+# ============================================================================
+# 13b. HEALING-METER ROW FIX, ported from the parallel 2.10.1 build.
+#      2.9.5 raised the multiboard to 20 rows for the "Healed by:" section, but
+#      DmgMbCreate's item-styling loop still stopped at 16, so rows 16-19 never
+#      got their style or column widths applied. Not hero work - carried here
+#      only so this build is a superset of 2.10.1 rather than a fork of it.
+#      Skipped automatically on a base without the healing meter.
+# ============================================================================
+if 'function DmgMbCreate takes' in src and 'call MultiboardSetRowCount(DmgMB,20)' in src:
+    src = swap(src, 'exitwhen r>=16', 'exitwhen r>=20', 'meter-rows')
 
 # ============================================================================
 # 14. VERSION BUMP (reads whatever version the input carries)
