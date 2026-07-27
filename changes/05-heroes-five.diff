@@ -1,0 +1,317 @@
+# Five new heroes (H0SC Stormcaller, H0EX Executioner, H0WC Warchief,
+# H0SB Spellblade, H0GR Grudgebearer) + hero-picker grid 56 -> 64 cells,
+# + version bump to 2.10.0
+# stage: war3map_295.j -> war3map_2A0.j
+#
+--- a/war3map.j
++++ b/war3map.j
+@@ -3228,2 +3228,14 @@
+ call SaveStr(tC,BCq(DC,$48303037),0,"|cffe7544aBase Crit bonus|r: ,0,%%")
++call SaveStr(tC,BCq(DC,$48305343),0,"|cffe7544aForked Lightning chance|r: ,0,%%")
++call SaveStr(tC,BCq(DC,$48305343),1,"|cffd6e049Lightning damage (% of Intelligence)|r: ,0,%%")
++call SaveStr(tC,BCq(DC,$48304558),0,"|cffe7544aExecute damage bonus|r: ,0,%%")
++call SaveStr(tC,BCq(DC,$48304558),1,"|cffd6e049Execute threshold (% of max hit points)|r: ,0,%%")
++call SaveStr(tC,BCq(DC,$48305743),0,"|cffe7544aDamage bonus per nearby ally|r: ,0,%%")
++call SaveStr(tC,BCq(DC,$48305743),1,"|cffd6e049Battle Standard healing per second|r: ,0,")
++call SaveStr(tC,BCq(DC,$48305743),2,"|cff4daed4Total hit points restored|r: ,0,")
++call SaveStr(tC,BCq(DC,$48305342),0,"|cffe7544aMana spent per attack|r: ,0,%%")
++call SaveStr(tC,BCq(DC,$48305342),1,"|cffd6e049Mana to damage conversion|r: ,0,%%")
++call SaveStr(tC,BCq(DC,$48304752),0,"|cffe7544aStored Grudge|r: ,0,")
++call SaveStr(tC,BCq(DC,$48304752),1,"|cffd6e049Damage stored|r: ,0,%%")
++call SaveStr(tC,BCq(DC,$48304752),2,"|cff4daed4Damage reduction|r: ,0,%%")
+ call SaveStr(tC,BCq(DC,$48304b42),0,"|cffe7544aAssimilated damage|r: ,0,")
+@@ -5478,2 +5490,22 @@
+ call SaveStr(tC,BCq(Po,$48303030),4,"24")
++call SaveStr(tC,BCq(Po,$48305343),1,"ReplaceableTextures\\CommandButtons\\BTNShaman.blp")
++call SaveStr(tC,BCq(Po,$48305343),2,"|cff00ffffPassive|r: Forked Lightning: When the Hero attacks an enemy it has a 20% chance to call down a chain of lightning that strikes up to 5 enemies in a chain, each struck for |cffff00ffmagic damage|r equal to a percentage of its |cff8fd6ffIntelligence|r. [|cff80ff80Luck|r]")
++call SaveStr(tC,BCq(Po,$48305343),3,"|cffffff00Level Up Bonus|r: Forked Lightning: +0.9% Intelligence damage.")
++call SaveStr(tC,BCq(Po,$48305343),4,"24")
++call SaveStr(tC,BCq(Po,$48304558),1,"ReplaceableTextures\\CommandButtons\\BTNHeroDeathKnight.blp")
++call SaveStr(tC,BCq(Po,$48304558),2,"|cff00ffffPassive|r: Headsman's Toll: The Hero's attacks against an enemy below |cffffcc0020%|r of its maximum hit points deal massively increased damage.|n|n|cff00ffffPassive|r: Grim Harvest: Killing an enemy restores |cffffcc002%|r of the Hero's maximum hit points and mana.")
++call SaveStr(tC,BCq(Po,$48304558),3,"|cffffff00Level Up Bonus|r: Headsman's Toll: +0.5% execute damage.")
++call SaveStr(tC,BCq(Po,$48304558),4,"24")
++call SaveStr(tC,BCq(Po,$48305743),1,"ReplaceableTextures\\CommandButtons\\BTNChaosWarlord.blp")
++call SaveStr(tC,BCq(Po,$48305743),2,"|cff00ffffPassive|r: Warlord's Presence: All damage the Warchief deals is increased by |cffffcc006%|r for every allied Hero within 900 range, itself included (maximum 5).|n|n|cff00ffffPassive|r: Battle Standard: Every second the Warchief restores hit points to itself and every allied Hero within 900 range, based on its level and |cffff8000Strength|r.")
++call SaveStr(tC,BCq(Po,$48305743),3,"|cffffff00Level Up Bonus|r: Battle Standard: +30 hit points restored per second.")
++call SaveStr(tC,BCq(Po,$48305743),4,"24")
++call SaveStr(tC,BCq(Po,$48305342),1,"ReplaceableTextures\\CommandButtons\\BTNVoidWalker.blp")
++call SaveStr(tC,BCq(Po,$48305342),2,"|cff00ffffPassive|r: Arcane Edge: Every attack consumes |cffffcc002%|r of the Hero's maximum mana and unleashes |cffff00ffmagic damage|r equal to a multiple of the mana consumed. Without mana there is no bonus.|n|n|cff00ffffPassive|r: Mana Font: Killing an enemy restores |cffffcc002%|r of maximum mana.")
++call SaveStr(tC,BCq(Po,$48305342),3,"|cffffff00Level Up Bonus|r: Arcane Edge: +1% mana to damage conversion.")
++call SaveStr(tC,BCq(Po,$48305342),4,"24")
++call SaveStr(tC,BCq(Po,$48304752),1,"ReplaceableTextures\\CommandButtons\\BTNBlueMagnataur.blp")
++call SaveStr(tC,BCq(Po,$48304752),2,"|cff00ffffPassive|r: Thick Hide: The Grudgebearer takes |cffffcc0010%|r less damage from all sources.|n|n|cff00ffffPassive|r: Grudge: Stores a percentage of all damage it takes, up to 5 times its attack damage. Its next attack releases the whole grudge as |cffff00ffmagic damage|r to all enemies within 400 range of the target.")
++call SaveStr(tC,BCq(Po,$48304752),3,"|cffffff00Level Up Bonus|r: Grudge: +0.05% of damage stored. Thick Hide: +0.01% damage reduction.")
++call SaveStr(tC,BCq(Po,$48304752),4,"24")
+ call SaveStr(tC,BCq(Po,$48304b42),1,"ReplaceableTextures\\CommandButtons\\BTNDemoness.blp")
+@@ -6615,2 +6647,6 @@
+ return "|cffccccccOther|r"
++elseif b==$48305342 then
++return "|cff8fd6ffArcane Edge|r"
++elseif b==$48304752 then
++return "|cff8fd6ffGrudge|r"
+ elseif b<0 then
+@@ -9438,3 +9474,3 @@
+ loop
+-exitwhen Wnq>56
++exitwhen Wnq>64
+ if bH[Wnq]>0 then
+@@ -11487,2 +11523,16 @@
+ call SaveReal(tC,BCq(pC,GetHandleId(Smt)),2,(80.+4.*I2R(kmt))*1.)
++elseif emt==$48305343 then
++call SaveReal(tC,BCq(pC,GetHandleId(Smt)),0,20.*1.)
++call SaveReal(tC,BCq(pC,GetHandleId(Smt)),1,(80.+.9*I2R(kmt))*1.)
++elseif emt==$48304558 then
++call SaveReal(tC,BCq(pC,GetHandleId(Smt)),0,RMinBJ(150.+.5*I2R(kmt),400.)*1.)
++call SaveReal(tC,BCq(pC,GetHandleId(Smt)),1,20.*1.)
++elseif emt==$48305743 then
++call SaveReal(tC,BCq(pC,GetHandleId(Smt)),0,6.*1.)
++elseif emt==$48305342 then
++call SaveReal(tC,BCq(pC,GetHandleId(Smt)),0,2.*1.)
++call SaveReal(tC,BCq(pC,GetHandleId(Smt)),1,(200.+I2R(kmt))*1.)
++elseif emt==$48304752 then
++call SaveReal(tC,BCq(pC,GetHandleId(Smt)),1,RMinBJ(40.+.05*I2R(kmt),60.)*1.)
++call SaveReal(tC,BCq(pC,GetHandleId(Smt)),2,RMinBJ(10.+.01*I2R(kmt),20.)*1.)
+ elseif emt==$48303136 then
+@@ -12934,2 +12984,24 @@
+ endif
++if GetUnitTypeId(ydt)==$48305343 and jdt then
++call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,20.*1.)
++call SaveReal(tC,BCq(pC,GetHandleId(ydt)),1,80.9*1.)
++endif
++if GetUnitTypeId(ydt)==$48304558 and jdt then
++call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,150.5*1.)
++call SaveReal(tC,BCq(pC,GetHandleId(ydt)),1,20.*1.)
++endif
++if GetUnitTypeId(ydt)==$48305743 and jdt then
++call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,6.*1.)
++call SaveReal(tC,BCq(pC,GetHandleId(ydt)),1,0.)
++call SaveReal(tC,BCq(pC,GetHandleId(ydt)),2,0.)
++endif
++if GetUnitTypeId(ydt)==$48305342 and jdt then
++call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,2.*1.)
++call SaveReal(tC,BCq(pC,GetHandleId(ydt)),1,201.*1.)
++endif
++if GetUnitTypeId(ydt)==$48304752 and jdt then
++call SaveReal(tC,BCq(pC,GetHandleId(ydt)),0,0.)
++call SaveReal(tC,BCq(pC,GetHandleId(ydt)),1,40.05*1.)
++call SaveReal(tC,BCq(pC,GetHandleId(ydt)),2,10.01*1.)
++endif
+ call puq(ydt,5,1.)
+@@ -16072,3 +16144,3 @@
+ loop
+-exitwhen EOq>56
++exitwhen EOq>64
+ call BlzDestroyFrame(IH[EOq])
+@@ -17608,2 +17680,40 @@
+ endfunction
++function WcAllies takes unit u returns integer
++local integer i=0
++local integer n=0
++local player p=GetOwningPlayer(u)
++local integer pid=GetPlayerId(GetOwningPlayer(u))
++loop
++exitwhen i>7
++if Gh[i]!=null and UnitAlive(Gh[i]) and(Gh[i]==u or IsUnitAlly(Gh[i],p) or(t[i] and t[pid] and(not tL))) and G4q(u,Gh[i])<=900. then
++set n=n+1
++endif
++set i=i+1
++endloop
++set p=null
++return n
++endfunction
++function WcBanner takes unit u returns nothing
++local integer i=0
++local player p=GetOwningPlayer(u)
++local integer pid=GetPlayerId(GetOwningPlayer(u))
++local real amt=30.*I2R(GetHeroLevel(u))+I2R(GetHeroStr(u,true))
++local real tot=0.
++local real bef=0.
++loop
++exitwhen i>7
++if Gh[i]!=null and UnitAlive(Gh[i]) and(Gh[i]==u or IsUnitAlly(Gh[i],p) or(t[i] and t[pid] and(not tL))) and G4q(u,Gh[i])<=900. then
++set bef=GetUnitState(Gh[i],UNIT_STATE_LIFE)
++call SetUnitState(Gh[i],UNIT_STATE_LIFE,bef+amt)
++set tot=tot+GetUnitState(Gh[i],UNIT_STATE_LIFE)-bef
++if po then
++call DestroyEffect(AddSpecialEffectTarget("Abilities\\Spells\\Human\\HolyBolt\\HolyBoltSpecialArt.mdl",Gh[i],"origin"))
++endif
++endif
++set i=i+1
++endloop
++call SaveReal(tC,BCq(pC,GetHandleId(u)),1,amt)
++call SaveReal(tC,BCq(pC,GetHandleId(u)),2,LoadReal(tC,BCq(pC,GetHandleId(u)),2)+tot)
++set p=null
++endfunction
+ function PGt takes nothing returns nothing
+@@ -17925,2 +18035,4 @@
+ endif
++elseif CGt==$48305743 then
++call WcBanner(fGt)
+ elseif CGt==$4f303033 then
+@@ -37984,2 +38096,9 @@
+ endif
++if GetUnitTypeId(ACt)==$48304558 then
++call SetUnitState(ACt,UNIT_STATE_LIFE,GetUnitState(ACt,UNIT_STATE_LIFE)+GetUnitState(ACt,UNIT_STATE_MAX_LIFE)*.02)
++call SetUnitState(ACt,UNIT_STATE_MANA,GetUnitState(ACt,UNIT_STATE_MANA)+GetUnitState(ACt,UNIT_STATE_MAX_MANA)*.02)
++endif
++if GetUnitTypeId(ACt)==$48305342 then
++call SetUnitState(ACt,UNIT_STATE_MANA,GetUnitState(ACt,UNIT_STATE_MANA)+GetUnitState(ACt,UNIT_STATE_MAX_MANA)*.02)
++endif
+ if GetUnitTypeId(ACt)==$48304b42 then
+@@ -39072,2 +39191,6 @@
+ endif
++if OX==$48304752 and qZ[pZ]>0. and(not IsUnitIllusion(CX)) then
++set qZ[pZ]=qZ[pZ]*(1.-RMinBJ(.10+.0001*I2R(GetHeroLevel(CX)),.20))*1.
++call SaveReal(tC,BCq(pC,GetHandleId(CX)),0,RMinBJ(LoadReal(tC,BCq(pC,GetHandleId(CX)),0)+qZ[pZ]*RMinBJ(.40+.0005*I2R(GetHeroLevel(CX)),.60),RMaxBJ(UIq(CX,0)*5.,0.)))
++endif
+ if GetUnitAbilityLevel(CX,$42303245)>0 then
+@@ -39432,2 +39555,32 @@
+ endif
++endif
++endif
++if HX==$48305343 and HZ[pZ] and(not IsUnitIllusion(hX)) and GetRandomInt(1,$64)<=(20.+Dwq(hX))*uX then
++if boq(GetHandleId(hX),$48305343,.4) then
++call Qsq(hX,CX,GetUnitX(hX),GetUnitY(hX),$41303252,"chainlightning",I2R(GetHeroInt(hX,true))*(.8+.009*I2R(GetHeroLevel(hX))),ABILITY_RLF_DAMAGE_PER_TARGET_OCL1)
++endif
++endif
++if HX==$48304558 and HZ[pZ] and(not IsUnitIllusion(hX)) and qZ[pZ]>0. and GetWidgetLife(CX)<=GetUnitState(CX,UNIT_STATE_MAX_LIFE)*.2 then
++set qZ[pZ]=qZ[pZ]*RMinBJ(2.5+.005*I2R(GetHeroLevel(hX)),5.)*1.
++if po then
++call DestroyEffect(AddSpecialEffect("Abilities\\Spells\\NightElf\\FanOfKnives\\FanOfKnivesTarget.mdl",GetUnitX(CX),GetUnitY(CX)))
++endif
++endif
++if HX==$48305743 and(not IsUnitIllusion(hX)) and qZ[pZ]>0. then
++set qZ[pZ]=qZ[pZ]*(1.+.06*I2R(IMinBJ(WcAllies(hX),5)))*1.
++endif
++if HX==$48305342 and HZ[pZ] and(not IsUnitIllusion(hX)) and GetUnitState(hX,UNIT_STATE_MANA)>=GetUnitState(hX,UNIT_STATE_MAX_MANA)*.02 then
++set j=3
++set df=$48305342
++call SetUnitState(hX,UNIT_STATE_MANA,GetUnitState(hX,UNIT_STATE_MANA)-GetUnitState(hX,UNIT_STATE_MAX_MANA)*.02)
++call sLq(hX,CX,GetUnitState(hX,UNIT_STATE_MAX_MANA)*.02*(2.+.01*I2R(GetHeroLevel(hX))),false,false,null,DAMAGE_TYPE_MAGIC,null)
++if po then
++call DestroyEffect(AddSpecialEffect("Abilities\\Weapons\\Bolt\\BoltImpact.mdl",GetUnitX(CX),GetUnitY(CX)))
++endif
++endif
++if HX==$48304752 and HZ[pZ] and(not IsUnitIllusion(hX)) and LoadReal(tC,BCq(pC,GetHandleId(hX)),0)>=1. then
++call mEq(hX,GetUnitX(CX),GetUnitY(CX),LoadReal(tC,BCq(pC,GetHandleId(hX)),0),400.,true,$48304752,true,false)
++call SaveReal(tC,BCq(pC,GetHandleId(hX)),0,0.)
++if po then
++call DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Orc\\WarStomp\\WarStompCaster.mdl",GetUnitX(CX),GetUnitY(CX)))
+ endif
+@@ -42283,2 +42436,7 @@
+ set KC[54]=$48304b42
++set KC[55]=$48305343
++set KC[56]=$48304558
++set KC[57]=$48305743
++set KC[58]=$48305342
++set KC[59]=$48304752
+ set Doq=1
+@@ -42291,3 +42449,3 @@
+ loop
+-exitwhen Doq>56
++exitwhen Doq>64
+ call LJq(KC[Doq],false)
+@@ -42300,3 +42458,3 @@
+ loop
+-exitwhen Doq>56
++exitwhen Doq>64
+ set yoq=0
+@@ -42406,2 +42564,62 @@
+ set NH[YH]=$48303036
++set YH=YH+1
++endif
++set Zoq=LoadInteger(wH,$48305343,0)
++set oH[Zoq]=BlzBitOr(goq,oH[Zoq])
++if goq==4 then
++set VH[SH]=$48305343
++set SH=SH+1
++elseif goq==8 then
++set kH[QH]=$48305343
++set QH=QH+1
++elseif goq==16 then
++set NH[YH]=$48305343
++set YH=YH+1
++endif
++set Zoq=LoadInteger(wH,$48304558,0)
++set oH[Zoq]=BlzBitOr(joq,oH[Zoq])
++if joq==4 then
++set VH[SH]=$48304558
++set SH=SH+1
++elseif joq==8 then
++set kH[QH]=$48304558
++set QH=QH+1
++elseif joq==16 then
++set NH[YH]=$48304558
++set YH=YH+1
++endif
++set Zoq=LoadInteger(wH,$48305743,0)
++set oH[Zoq]=BlzBitOr(joq,oH[Zoq])
++if joq==4 then
++set VH[SH]=$48305743
++set SH=SH+1
++elseif joq==8 then
++set kH[QH]=$48305743
++set QH=QH+1
++elseif joq==16 then
++set NH[YH]=$48305743
++set YH=YH+1
++endif
++set Zoq=LoadInteger(wH,$48305342,0)
++set oH[Zoq]=BlzBitOr(goq,oH[Zoq])
++if goq==4 then
++set VH[SH]=$48305342
++set SH=SH+1
++elseif goq==8 then
++set kH[QH]=$48305342
++set QH=QH+1
++elseif goq==16 then
++set NH[YH]=$48305342
++set YH=YH+1
++endif
++set Zoq=LoadInteger(wH,$48304752,0)
++set oH[Zoq]=BlzBitOr(joq,oH[Zoq])
++if joq==4 then
++set VH[SH]=$48304752
++set SH=SH+1
++elseif joq==8 then
++set kH[QH]=$48304752
++set QH=QH+1
++elseif joq==16 then
++set NH[YH]=$48304752
+ set YH=YH+1
+@@ -43106,3 +43324,3 @@
+ call BlzFrameSetAbsPoint(hoq,wC,.2,.36)
+-call BlzFrameSetSize(hoq,Loq*2.+.032*8+.008*7,Loq*2.+.032*7+.008*6+.015+.02+.0145)
++call BlzFrameSetSize(hoq,Loq*2.+.032*8+.008*7,Loq*2.+.032*8+.008*7+.015+.02+.0145)
+ call BlzFrameSetPoint(sH,FRAMEPOINT_TOP,hoq,FRAMEPOINT_TOP,0.,-(Loq*.6))
+@@ -43131,3 +43349,3 @@
+ loop
+-exitwhen toq>56
++exitwhen toq>64
+ set EH[toq]=BlzCreateFrame("HeroSelectorButton",hoq,0,toq)
+@@ -43477,3 +43695,3 @@
+ loop
+-exitwhen kJq>56
++exitwhen kJq>64
+ if bH[kJq]>0 then
+@@ -49089,3 +49307,3 @@
+ set yaq=N8()
+-set jm[yaq]="CHS v2.9.5"
++set jm[yaq]="CHS v2.10.0"
+ set ym[yaq]=Daq
+@@ -50242,2 +50460,10 @@
+ call NIq($48304b42,13,1)
++call NIq($48305343,3,1)
++call NIq($48305343,6,1)
++call NIq($48304558,7,1)
++call NIq($48305743,8,1)
++call NIq($48305743,4,1)
++call NIq($48305342,13,1)
++call NIq($48304752,9,1)
++call NIq($48304752,4,1)
+ call NIq($48303035,7,1)
+@@ -50908,3 +51134,3 @@
+ function config takes nothing returns nothing
+-call SetMapName("CHS_v2.9.5")
++call SetMapName("CHS_v2.10.0")
+ call SetMapDescription("Build your own hero and test it against creeps and other players. Choose from over 200 abilities!\r\n\r\n7 May, 2026\r\n\r\nVisit the Discord at customherosurvival.com")

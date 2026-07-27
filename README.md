@@ -12,7 +12,34 @@ built map file.
 > modifications plus small code excerpts used as patch anchors, and to tooling for applying
 > them. If you are the author and want any of this taken down, open an issue.
 
-## What's in this release (v2.9.0)
+## What's in this release (v2.10.0)
+
+**Five new heroes**, chosen to fill five axes the 54-hero roster did not cover
+(one doc each in `docs/`):
+
+| | hero | attribute | the gap it fills |
+|---|---|---|---|
+| ⚡ | **The Stormcaller** (`H0SC`) | INT ranged | a chain that hops between *distinct* targets — every other area passive is a uniform radius |
+| ☠️ | **The Executioner** (`H0EX`) | STR melee | a low-health payoff — the two existing HP-scalers both scale off the *full* part of the bar |
+| 🚩 | **The Warchief** (`H0WC`) | STR melee | **ally support** — in an 8-player co-op map, no hero did anything for its allies |
+| 🗡️ | **The Spellblade** (`H0SB`) | INT melee | mana as ammunition — three heroes touch mana, none spend it |
+| 🛡️ | **The Grudgebearer** (`H0GR`) | STR melee | banking damage taken and spending it — two heroes react to being hit, none store it |
+
+**Hero-picker capacity** — the pick grid was 8 columns × 7 rows = 56 cells with all six
+consumer loops hard-bounded at 56, so a 54-hero roster had exactly two free slots. It is now
+8 × 8 = 64. Without this change the last three heroes would never have appeared.
+
+> **Base version.** This patch set is cut against **2.9.5**, so the build carries everything
+> from the damage meter (2.9.1–2.9.4) and the healing meter (2.9.5). Those stages shipped ahead of
+> the repo and now live on `main` as `changes/05-damage-healing-meter.diff`; this heroes
+> branch builds on top, so `changes/05-heroes-five.diff` is a diff against a 2.9.5 script. The patch script is anchored on code snippets rather than line numbers and
+> takes its input/output filenames as arguments, so it re-applies to any stage:
+>
+> ```
+> python tools/patch_05_heroes5.py war3map_295.j war3map_2A0.j
+> ```
+
+## What was in v2.9.0
 
 - **3 bug fixes** to existing map logic:
   - Item **I07M** no longer zeroes *all* of its holder's damage (operator-precedence fix).

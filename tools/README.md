@@ -27,6 +27,29 @@ needs attention.
 | `patch_04_betting_fix.py` | Betting payout inversion fix. `war3map_290.j` → `war3map_290_final.j`. |
 | `build_map.py` | Rebuild the `.w3x`, replacing the 5 modified files; verifies all others stay byte-identical. |
 | `assemble_diffs.py` | Regenerate `changes/*.diff` from the intermediate `war3map_*.j` stages. |
+| `patch_05_heroes5.py` | The five 2.10.0 heroes + hero-grid 56→64 + version bump. Takes the input/output `.j` as optional argv, so it chains onto whatever the newest stage is. |
+| `append_heroes5.py` | Append the five 2.10.0 heroes to `war3map.w3u` and `war3mapSkin.w3u`. |
+| `bump_version_2A0.py` | Version strings in `war3map.wts` / `war3mapSkin.txt` → 2.10.0. Replaces only the three exact full-version strings. |
+| `build_2A0.py` | Build `CHS_v2.10.0.w3x` + integrity and registration assertions. |
+| `heroes5_check.py` | Static JASS checks against a known-good baseline (see below). |
+| `heroes5_models.py` | Inventory every model/icon the map references and mark the ones already used by a roster hero. |
+
+## Checking a patched script before you build it
+
+A JASS compile error does not produce an error message — Warcraft III just reports
+*"map is unavailable or corrupted"*. `heroes5_check.py` catches the realistic causes
+mechanically, by diffing the patched script against the last script that is known to load:
+
+```
+python heroes5_check.py war3map_294.j war3map_2A0.j
+```
+
+It verifies block balance (`function`/`if`/`loop`), string-literal balance, the
+locals-before-statements rule, and — most usefully — the **external-call delta**: every
+function called but not defined in the file must already have been called by the baseline.
+A misspelled native (the classic cause; `MultiboardSetItemValueWidth` does not exist,
+`MultiboardSetItemWidth` does) shows up there as a new external call.
+`NEW EXTERNAL CALLS: none` means the patch introduced no unknown natives.
 
 ## Order of operations
 
